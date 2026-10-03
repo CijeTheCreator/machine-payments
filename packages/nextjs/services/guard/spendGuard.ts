@@ -5,7 +5,7 @@ import { ApprovalTierPolicy } from "./policies/approval-tier.policy";
 import { CounterpartyAllowlistPolicy } from "./policies/counterparty-allowlist.policy";
 import { SpendLimitPolicy } from "./policies/spend-limit.policy";
 import { createScheduledPayment } from "./scheduling";
-import { InMemorySpendStore, getDefaultSpendStore } from "./store";
+import { getDefaultSpendStore } from "./store";
 import {
   PaymentParams,
   PaymentResult,
