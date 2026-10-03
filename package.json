@@ -39,6 +39,8 @@
     "lint-staged": "lint-staged",
     "script:create-agent": "tsx scripts/createAgent.ts",
     "script:fund-agent": "tsx scripts/fundAgent.ts",
+    "test": "yarn test:smoke && yarn test:guard && yarn hardhat:test",
+    "test:guard": "tsx test/spendGuard.test.ts",
     "test:smoke": "tsx test/faucetClient.smoke.test.ts"
   },
   "packageManager": "yarn@3.2.3",
@@ -48,7 +50,8 @@
     "envfile": "^7.1.0",
     "husky": "^9.1.6",
     "lint-staged": "^15.2.10",
-    "tsx": "^4.23.15"
+    "tsx": "^4.23.15",
+    "yaml": "^2.9.1"
   },
   "engines": {
     "node": ">=20.18.3"

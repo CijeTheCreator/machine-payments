@@ -35,19 +35,24 @@ Any template submitted must pass every item in Hedera's automated Stage 1 evalua
   - Dedicated external serverless micro-dispenser API hosting a funded testnet treasury outside the repository to strictly protect Mechanical Gate 8 (Zero Committed Secrets).
   - Single-command CLI onboarding (`npm run script:fund-agent`): generates a fresh Hedera ED25519/ECDSA keypair, requests initial testnet HBAR from the dispenser, and writes `.env.local` automatically.
   - Zero UI footprint: dispenser interaction is strictly developer/CLI-driven to preserve clean production dApp aesthetics and prevent public treasury draining.
-- [ ] **3. Quick Developer Scripts (`scripts/`):**
+- [ ] **3. Quick Developer Scripts & Vault Auto-Deployment (`scripts/`):**
   - Single-command CLI utilities in `package.json`:
     - `script:create-agent` & `script:fund-agent` (account provisioning)
+    - `script:auto-deploy-vault` & `script:deploy-vault` (automatic on-chain HSCS `Vault` deployment with HTS precompile wiring and `.env.local` address sync)
     - `script:create-topic` & `script:publish-policy` (HCS audit & HCS-2 registry)
     - `script:grant-allowance` (HIP-336 non-custodial allowance & instant kill switch)
     - `script:propose-scheduled` & `script:sign-schedule` (HIP-423 scheduled transaction workflow)
-    - `script:deploy-vault` (HSCS `Vault` deployment with HTS precompile wiring)
     - `script:check-balance` (multi-account balance and allowance inspection)
 - [ ] **4. Multi-Tier Agent Spending Controls & Non-Custodial Governance:**
-  - Off-Chain Hook Layer (L0): Hedera Agent Kit v4 (`@hashgraph/agent-kit`) hooks and policies enforcing pre-execution spending caps, counterparty allowlists, and dangerous tool rejections.
-  - Non-Custodial Execution (HIP-336 & HIP-423): Capped revocable HBAR allowances for routine payments, plus scheduled transactions for payments exceeding auto-approval limits.
-  - On-Chain Consensus Vault (L2): HSCS smart contract (`Vault`) enforcing caps and allowlists directly in consensus, disbursing HBAR via the HTS `0x167` `cryptoTransfer` precompile.
-  - Consensus Settlement Anchors: Integration with HIP-991 consensus custom fees on HCS topics.
+  - Unified Configuration (`scaffold.config.yaml`): Root-level declarative YAML configuration specifying agent modes, budget caps (`perTaskHbar`, `perDayHbar`), allowlists, blocked tools, and HCS settings, with dynamic `.env.local` override support.
+  - Native Zero-Bloat Guard Module (`packages/nextjs/services/guard`): First-class, drop-in spend guard with dual API surface:
+    - Hedera Agent Kit v4 (`@hashgraph/hedera-agent-kit`) hooks & policies (`SpendLimitPolicy`, `CounterpartyAllowlistPolicy`, `ApprovalTierPolicy`, `RejectToolPolicy`).
+    - Programmatic `executePayment()` method for direct Next.js Route Handlers and machine-to-machine x402 endpoints.
+  - Multi-Tier Enforcement Ladder with Auto-Detection:
+    - Off-Chain Hook Layer (L0/L1): Pre-flight validation, atomic hold reservations, and rolling 24h budget tracking via zero-dependency in-memory store with optional SQLite adapter.
+    - On-Chain Consensus Vault (L2): Auto-detected when `VAULT_CONTRACT_ID` / `NEXT_PUBLIC_VAULT_ADDRESS` is set, enforcing caps in consensus via `Vault.sol` with HTS `0x167` `cryptoTransfer` precompile disbursements.
+  - Non-Custodial Governance & HITL Escalation (HIP-336 & HIP-423): Payments under `perTaskCap` auto-execute; payments exceeding the cap construct an authentic Hedera `ScheduleCreateTransaction`, record an `ESCALATE` decision to HCS, and return the `scheduleId` for owner signing via CLI or UI.
+  - Consensus Settlement & Audit Logging: Tamper-proof HCS audit topic (`agent-spend-audit`) recording all `ALLOW`, `BLOCK`, and `ESCALATE` decisions, with fee-free defaults and support for optional HIP-991 consensus custom fees.
 - [ ] **5. Dual-Flavor Facilitator & Next.js API Routes:**
   - `npm run dev` (Default - Zero Config): Connects directly to Hedera's public hosted `blocky402.com` facilitator with zero local operator key setup.
   - `npm run dev:self-hosted`: Boots a co-located Next.js Route Handler (`/api/x402/facilitator`) for self-contained fee sponsorship and offline sovereignty.

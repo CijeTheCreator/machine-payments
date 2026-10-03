@@ -1,0 +1,41 @@
+# Scaffold-HBAR: Machine & Agent Payments Configuration
+# Top-level single source of truth across CLI scripts, Next.js dApp, and agent workers.
+
+network:
+  default: "testnet"
+  testnetRpc: "https://testnet.hashio.io/api"
+  mainnetRpc: "https://mainnet.hashio.io/api"
+  mirrorNode: "https://testnet.mirrornode.hedera.com"
+
+agent:
+  # Mode resolution:
+  # - 'auto': Checks if VAULT_CONTRACT_ID / NEXT_PUBLIC_VAULT_ADDRESS is set; routes to 'vault' if set, else 'offchain'.
+  # - 'offchain': Pure L0/L1 hooks with atomic hold reservations and rolling-24h budget enforcement.
+  # - 'vault': L2 on-chain consensus enforcement via Vault.sol using HTS 0x167 cryptoTransfer precompile.
+  mode: "auto"
+  currency: "HBAR"
+  pollingIntervalMs: 10000
+
+spendGuard:
+  caps:
+    perTaskHbar: 5
+    perDayHbar: 50
+    autoApprovalLimitHbar: 5
+  allowlist:
+    - "0.0.56789"
+  blockedTools:
+    - "delete_account"
+    - "freeze_token"
+    - "wipe_token"
+    - "approve_allowance"
+    - "delete_allowance"
+
+hcs:
+  auditTopicMemo: "agent-spend-audit"
+  policyTopicMemo: "hcs-2:0:86400"
+  enableHip991CustomFees: false
+  customFeeTinybar: 0
+
+faucet:
+  defaultUrl: "http://localhost:3001"
+  requestTimeoutMs: 6000

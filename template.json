@@ -32,6 +32,18 @@
       {
         "key": "FAUCET_URL",
         "description": "Optional endpoint for hosted zero-config testnet micro-faucet"
+      },
+      {
+        "key": "GUARD_MODE",
+        "description": "Optional spending guard mode: auto, offchain, or vault (default: auto)"
+      },
+      {
+        "key": "AUDIT_TOPIC_ID",
+        "description": "Optional Hedera Consensus Service topic ID for agent spend audit trail"
+      },
+      {
+        "key": "VAULT_CONTRACT_ID",
+        "description": "Optional deployed HSCS Vault contract ID (0.0.X) for consensus spend enforcement"
       }
     ],
     "outro": {
