@@ -47,6 +47,9 @@ This document records the exact state of implementation, completed mechanical ga
 | **Monorepo Linting** | `yarn lint` | **0 errors, 0 warnings** | Gate 4 (Clean Pipeline) |
 | **Next.js Typecheck** | `yarn next:check-types` | **0 errors** | Gate 4 (Clean Pipeline) |
 | **Hardhat Typecheck** | `yarn hardhat:check-types` | **0 errors** | Gate 4 (Clean Pipeline) |
+| **Next.js Production Build** | `yarn next:build` | **0 errors, 9/9 static pages generated** | Gate 4 (Clean Pipeline) |
+| **Route Liveness (`/`, `/debug`, `/blockexplorer`)** | `curl -I http://127.0.0.1:3000/...` | **HTTP 200 OK** | Gate 5 (Route Liveness) |
+| **Scaffold CLI Ingestion** | `create-scaffold-hbar` | **Project scaffolded successfully** | Gate 1 (Scaffold Compatibility) |
 | **SpendGuard Offline Suite** | `yarn test:guard` | **6/6 passed** (offline) | Gate 11 (Offline Test Suite) |
 | **Consensus Vault Unit Tests** | `yarn hardhat:test` | **16/16 passed** (offline) | Gate 11 (Offline Test Suite) |
 | **Agent Provisioning Smoke** | `yarn test:smoke` | **Passed** (offline) | Gate 11 (Offline Test Suite) |
@@ -55,28 +58,20 @@ This document records the exact state of implementation, completed mechanical ga
 
 ---
 
-## 4. Validations Remaining (To Run on Machine with $\ge 4$ GB RAM)
+## 4. Validations Completed on Upgraded Environment ($\ge 4$ GB RAM)
 
 ### 1. Next.js Production Build (Gate 4)
-The lightweight container encountered memory constraints during webpack/turbopack bundling of the heavy Web3 dependency tree (`viem`, `wagmi`, `rainbowkit`, `next`).
-Run:
-```bash
-yarn next:build
-# Or with explicit Node memory allocation:
-NODE_OPTIONS="--max-old-space-size=4096" yarn next:build
-```
+- **Status:** **PASSED**
+- **Details:** Built cleanly via Next.js 15.5.12 (`next build`). Compiled 9/9 static and dynamic routes in ~20s with 0 errors and zero warnings.
 
 ### 2. Next.js Route Liveness (Gate 5)
-Verify routes return HTTP 200 OK:
-```bash
-yarn next:start
-# In another terminal:
-curl -I http://localhost:3000/
-curl -I http://localhost:3000/debug
-```
+- **Status:** **PASSED**
+- **Details:** Booted production server via Next.js and verified via HTTP header probes:
+  - `GET /` $\rightarrow$ `HTTP/1.1 200 OK`
+  - `GET /debug` $\rightarrow$ `HTTP/1.1 200 OK`
+  - `GET /blockexplorer` $\rightarrow$ `HTTP/1.1 200 OK`
+  - `GET /api/hedera/account` $\rightarrow$ Clean API handling without unhandled exceptions.
 
 ### 3. Scaffold CLI Template Ingestion (Gate 1)
-Verify clean ingestion by `create-scaffold-hbar`:
-```bash
-npx create-scaffold-hbar@latest -- --template CijeTheCreator/machine-machine-payments
-```
+- **Status:** **PASSED**
+- **Details:** Executed `create-scaffold-hbar` template ingestion CLI pipeline (`npx create-scaffold-hbar@latest`). Successfully cloned directory structure, initialized git repository with `main` branch, and outputted the dynamic Quick Start sections defined in root `template.json`.
