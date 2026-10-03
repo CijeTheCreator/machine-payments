@@ -43,7 +43,7 @@ Any template submitted must pass every item in Hedera's automated Stage 1 evalua
     - `script:grant-allowance` (HIP-336 non-custodial allowance & instant kill switch)
     - `script:propose-scheduled` & `script:sign-schedule` (HIP-423 scheduled transaction workflow)
     - `script:check-balance` (multi-account balance and allowance inspection)
-- [ ] **4. Multi-Tier Agent Spending Controls & Non-Custodial Governance:**
+- [x] **4. Multi-Tier Agent Spending Controls & Non-Custodial Governance:**
   - Unified Configuration (`scaffold.config.yaml`): Root-level declarative YAML configuration specifying agent modes, budget caps (`perTaskHbar`, `perDayHbar`), allowlists, blocked tools, and HCS settings, with dynamic `.env.local` override support.
   - Native Zero-Bloat Guard Module (`packages/nextjs/services/guard`): First-class, drop-in spend guard with dual API surface:
     - Hedera Agent Kit v4 (`@hashgraph/hedera-agent-kit`) hooks & policies (`SpendLimitPolicy`, `CounterpartyAllowlistPolicy`, `ApprovalTierPolicy`, `RejectToolPolicy`).
