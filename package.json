@@ -38,9 +38,12 @@
     "precommit": "lint-staged",
     "lint-staged": "lint-staged",
     "script:create-agent": "tsx scripts/createAgent.ts",
+    "script:create-topic": "tsx scripts/createTopic.ts",
     "script:fund-agent": "tsx scripts/fundAgent.ts",
-    "test": "yarn test:smoke && yarn test:guard && yarn hardhat:test",
+    "script:publish-policy": "tsx scripts/publishPolicy.ts",
+    "test": "yarn test:smoke && yarn test:guard && yarn test:policy && yarn hardhat:test",
     "test:guard": "tsx test/spendGuard.test.ts",
+    "test:policy": "tsx test/policyRegistry.test.ts",
     "test:smoke": "tsx test/faucetClient.smoke.test.ts"
   },
   "packageManager": "yarn@3.2.3",

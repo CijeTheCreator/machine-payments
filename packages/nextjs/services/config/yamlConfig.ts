@@ -177,11 +177,15 @@ export function loadYamlConfig(): AppScaffoldConfig {
       .filter(Boolean);
     config.spendGuard.allowlist = [...new Set([...config.spendGuard.allowlist, ...accounts])];
   }
-  if (process.env.AUDIT_TOPIC_ID) {
-    config.hcs.auditTopicId = process.env.AUDIT_TOPIC_ID;
+  const auditTopic =
+    process.env.HCS_AUDIT_TOPIC_ID || process.env.NEXT_PUBLIC_HCS_AUDIT_TOPIC_ID || process.env.AUDIT_TOPIC_ID;
+  if (auditTopic) {
+    config.hcs.auditTopicId = auditTopic;
   }
-  if (process.env.POLICY_TOPIC_ID) {
-    config.hcs.policyTopicId = process.env.POLICY_TOPIC_ID;
+  const policyTopic =
+    process.env.HCS_POLICY_TOPIC_ID || process.env.NEXT_PUBLIC_HCS_POLICY_TOPIC_ID || process.env.POLICY_TOPIC_ID;
+  if (policyTopic) {
+    config.hcs.policyTopicId = policyTopic;
   }
   if (process.env.FAUCET_URL) {
     config.faucet.defaultUrl = process.env.FAUCET_URL;

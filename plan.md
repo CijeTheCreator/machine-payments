@@ -56,7 +56,7 @@ Any template submitted must pass every item in Hedera's automated Stage 1 evalua
 - [ ] **5. Dual-Flavor Facilitator & Next.js API Routes:**
   - `npm run dev` (Default - Zero Config): Connects directly to Hedera's public hosted `blocky402.com` facilitator with zero local operator key setup.
   - `npm run dev:self-hosted`: Boots a co-located Next.js Route Handler (`/api/x402/facilitator`) for self-contained fee sponsorship and offline sovereignty.
-- [ ] **6. HCS-2 Versioned Policy Registry & Mirror Node Verification (`/verify`):**
+- [x] **6. HCS-2 Versioned Policy Registry & Mirror Node Verification (`/verify`):**
   - HCS-2 indexed registry topic (`hcs-2:0:<ttl>`) with owner-only submit key for immutable, consensus-timestamped policy versioning.
   - Independent `/verify` Next.js route that reads Mirror Node REST APIs to audit policy history and verify payment receipts against active limits.
 - [ ] **7. Native Hedera Wallet & Scaffold-HBAR UI Components:**

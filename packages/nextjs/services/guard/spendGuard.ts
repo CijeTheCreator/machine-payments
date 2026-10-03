@@ -5,7 +5,7 @@ import { ApprovalTierPolicy } from "./policies/approval-tier.policy";
 import { CounterpartyAllowlistPolicy } from "./policies/counterparty-allowlist.policy";
 import { SpendLimitPolicy } from "./policies/spend-limit.policy";
 import { createScheduledPayment } from "./scheduling";
-import { InMemorySpendStore } from "./store";
+import { InMemorySpendStore, getDefaultSpendStore } from "./store";
 import {
   PaymentParams,
   PaymentResult,
@@ -68,12 +68,7 @@ export class SpendGuard {
       rollingWindowMs: options?.rollingWindowMs ?? 24 * 60 * 60 * 1000,
     };
 
-    this.store =
-      options?.store ||
-      new InMemorySpendStore({
-        rollingWindowMs: this.config.rollingWindowMs,
-        holdTtlMs: this.config.holdTtlMs,
-      });
+    this.store = options?.store || getDefaultSpendStore();
 
     this.client = options?.client;
   }

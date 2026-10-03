@@ -132,3 +132,9 @@ export class InMemorySpendStore implements SpendStore {
     this.auditHistory = [];
   }
 }
+
+const defaultStoreInstance = new InMemorySpendStore();
+
+export function getDefaultSpendStore(): InMemorySpendStore {
+  return defaultStoreInstance;
+}

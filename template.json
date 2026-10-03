@@ -42,6 +42,10 @@
         "description": "Optional Hedera Consensus Service topic ID for agent spend audit trail"
       },
       {
+        "key": "HCS_POLICY_TOPIC_ID",
+        "description": "Optional HCS-2 versioned policy registry topic ID (0.0.X)"
+      },
+      {
         "key": "VAULT_CONTRACT_ID",
         "description": "Optional deployed HSCS Vault contract ID (0.0.X) for consensus spend enforcement"
       }

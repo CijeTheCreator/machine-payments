@@ -4,7 +4,7 @@ import React, { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bars3Icon, BugAntIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon, BugAntIcon, MagnifyingGlassIcon, ShieldCheckIcon } from "@heroicons/react/24/outline";
 import { RainbowKitCustomConnectButton } from "~~/components/scaffold-hbar";
 import { useOutsideClick } from "~~/hooks/scaffold-hbar";
 
@@ -28,6 +28,11 @@ export const menuLinks: HeaderMenuLink[] = [
     label: "Block Explorer",
     href: "/blockexplorer",
     icon: <MagnifyingGlassIcon className="h-4 w-4" />,
+  },
+  {
+    label: "Verify",
+    href: "/verify",
+    icon: <ShieldCheckIcon className="h-4 w-4" />,
   },
 ];
 

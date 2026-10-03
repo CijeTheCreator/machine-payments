@@ -9,3 +9,5 @@ export * from "./policies/spend-limit.policy";
 export * from "./policies/approval-tier.policy";
 export * from "./hooks/spend-audit.hook";
 export * from "./spendGuard";
+export * from "./policyRegistry";
+export * from "./verification";
