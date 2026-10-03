@@ -48,6 +48,22 @@
       {
         "key": "VAULT_CONTRACT_ID",
         "description": "Optional deployed HSCS Vault contract ID (0.0.X) for consensus spend enforcement"
+      },
+      {
+        "key": "FACILITATOR_MODE",
+        "description": "Optional facilitator flavor: hosted (default Blocky402) or self-hosted (/api/x402/facilitator)"
+      },
+      {
+        "key": "FACILITATOR_OPERATOR_ID",
+        "description": "Optional fee-payer Hedera Account ID (0.0.X) for self-hosted facilitator"
+      },
+      {
+        "key": "FACILITATOR_OPERATOR_KEY",
+        "description": "Optional fee-payer Hedera Private Key for self-hosted facilitator fee sponsorship"
+      },
+      {
+        "key": "NEXT_PUBLIC_FACILITATOR_URL",
+        "description": "Optional custom facilitator URL (defaults to https://api.testnet.blocky402.com)"
       }
     ],
     "outro": {

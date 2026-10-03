@@ -41,12 +41,21 @@ export interface FaucetConfig {
   requestTimeoutMs: number;
 }
 
+export interface FacilitatorConfig {
+  mode: "hosted" | "self-hosted";
+  hostedUrl: string;
+  fallbackUrl: string;
+  activeUrl?: string;
+  feePayerAccountId?: string;
+}
+
 export interface AppScaffoldConfig {
   network: NetworkConfig;
   agent: AgentConfig;
   spendGuard: SpendGuardConfig;
   hcs: HcsConfig;
   faucet: FaucetConfig;
+  facilitator: FacilitatorConfig;
   vault?: {
     address?: string;
   };
@@ -82,6 +91,11 @@ export const DEFAULT_SCAFFOLD_CONFIG: AppScaffoldConfig = {
   faucet: {
     defaultUrl: "http://localhost:3001",
     requestTimeoutMs: 6000,
+  },
+  facilitator: {
+    mode: "hosted",
+    hostedUrl: "https://api.testnet.blocky402.com",
+    fallbackUrl: "https://x402.org/facilitator",
   },
 };
 
@@ -151,6 +165,10 @@ export function loadYamlConfig(): AppScaffoldConfig {
       ...DEFAULT_SCAFFOLD_CONFIG.faucet,
       ...(fileConfig.faucet || {}),
     },
+    facilitator: {
+      ...DEFAULT_SCAFFOLD_CONFIG.facilitator,
+      ...(fileConfig.facilitator || {}),
+    },
     vault: {
       address: process.env.VAULT_CONTRACT_ID || process.env.NEXT_PUBLIC_VAULT_ADDRESS,
     },
@@ -190,6 +208,21 @@ export function loadYamlConfig(): AppScaffoldConfig {
   if (process.env.FAUCET_URL) {
     config.faucet.defaultUrl = process.env.FAUCET_URL;
   }
+
+  // Facilitator overrides
+  if (process.env.FACILITATOR_MODE || process.env.NEXT_PUBLIC_FACILITATOR_MODE) {
+    config.facilitator.mode = (process.env.FACILITATOR_MODE || process.env.NEXT_PUBLIC_FACILITATOR_MODE) as any;
+  }
+  if (process.env.FACILITATOR_URL || process.env.NEXT_PUBLIC_FACILITATOR_URL) {
+    config.facilitator.hostedUrl = (process.env.FACILITATOR_URL || process.env.NEXT_PUBLIC_FACILITATOR_URL)!;
+  }
+  if (process.env.FACILITATOR_OPERATOR_ID) {
+    config.facilitator.feePayerAccountId = process.env.FACILITATOR_OPERATOR_ID;
+  }
+
+  // Active URL resolution: self-hosted routes to local Next.js handler; hosted routes to public facilitator
+  config.facilitator.activeUrl =
+    config.facilitator.mode === "self-hosted" ? "/api/x402/facilitator" : config.facilitator.hostedUrl;
 
   return config;
 }

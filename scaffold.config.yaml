@@ -39,3 +39,8 @@ hcs:
 faucet:
   defaultUrl: "http://localhost:3001"
   requestTimeoutMs: 6000
+
+facilitator:
+  mode: "hosted" # "hosted" (Blocky402 zero-config) | "self-hosted" (/api/x402/facilitator)
+  hostedUrl: "https://api.testnet.blocky402.com"
+  fallbackUrl: "https://x402.org/facilitator"

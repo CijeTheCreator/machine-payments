@@ -43,6 +43,9 @@ Any template submitted must pass every item in Hedera's automated Stage 1 evalua
     - `script:grant-allowance` (HIP-336 non-custodial allowance & instant kill switch)
     - `script:propose-scheduled` & `script:sign-schedule` (HIP-423 scheduled transaction workflow)
     - `script:check-balance` (multi-account balance and allowance inspection)
+- [ ] **3b. Protected Route Code Scaffolder (`script:make-route`):**
+  - CLI code generator inspired by `php artisan make` that scaffolds ready-to-run Next.js App Router x402-protected API endpoints.
+  - Automatically wires the Spend Guard engine, micro-settlement parameters (price in tinybars, HBAR `0.0.0`), and dual-flavor facilitator negotiation into new endpoints.
 - [x] **4. Multi-Tier Agent Spending Controls & Non-Custodial Governance:**
   - Unified Configuration (`scaffold.config.yaml`): Root-level declarative YAML configuration specifying agent modes, budget caps (`perTaskHbar`, `perDayHbar`), allowlists, blocked tools, and HCS settings, with dynamic `.env.local` override support.
   - Native Zero-Bloat Guard Module (`packages/nextjs/services/guard`): First-class, drop-in spend guard with dual API surface:
@@ -53,9 +56,11 @@ Any template submitted must pass every item in Hedera's automated Stage 1 evalua
     - On-Chain Consensus Vault (L2): Auto-detected when `VAULT_CONTRACT_ID` / `NEXT_PUBLIC_VAULT_ADDRESS` is set, enforcing caps in consensus via `Vault.sol` with HTS `0x167` `cryptoTransfer` precompile disbursements.
   - Non-Custodial Governance & HITL Escalation (HIP-336 & HIP-423): Payments under `perTaskCap` auto-execute; payments exceeding the cap construct an authentic Hedera `ScheduleCreateTransaction`, record an `ESCALATE` decision to HCS, and return the `scheduleId` for owner signing via CLI or UI.
   - Consensus Settlement & Audit Logging: Tamper-proof HCS audit topic (`agent-spend-audit`) recording all `ALLOW`, `BLOCK`, and `ESCALATE` decisions, with fee-free defaults and support for optional HIP-991 consensus custom fees.
-- [ ] **5. Dual-Flavor Facilitator & Next.js API Routes:**
-  - `npm run dev` (Default - Zero Config): Connects directly to Hedera's public hosted `blocky402.com` facilitator with zero local operator key setup.
-  - `npm run dev:self-hosted`: Boots a co-located Next.js Route Handler (`/api/x402/facilitator`) for self-contained fee sponsorship and offline sovereignty.
+- [x] **5. Dual-Flavor Facilitator & Next.js API Routes:**
+  - `npm run dev` (Default - Zero Config): Connects directly to Hedera's public hosted `blocky402.com` facilitator (`https://api.testnet.blocky402.com`) with fallback to `x402.org` with zero local operator key setup.
+  - `npm run dev:self-hosted`: Boots co-located Next.js Route Handlers (`/api/x402/facilitator`, `/supported`, `/verify`, `/settle`) for self-contained fee sponsorship and offline sovereignty.
+  - Initial x402 sample resource route (`/api/x402/resource`) handling 402 challenge negotiation, signature verification, and consensus micro-settlement.
+  - Fast, 100% offline test suite (`yarn test:facilitator`) covering capability discovery, TransferTransaction verification, and mock consensus settlement.
 - [x] **6. HCS-2 Versioned Policy Registry & Mirror Node Verification (`/verify`):**
   - HCS-2 indexed registry topic (`hcs-2:0:<ttl>`) with owner-only submit key for immutable, consensus-timestamped policy versioning.
   - Independent `/verify` Next.js route that reads Mirror Node REST APIs to audit policy history and verify payment receipts against active limits.

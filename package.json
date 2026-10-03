@@ -34,6 +34,7 @@
     "next:lint": "yarn workspace @sh/nextjs lint",
     "next:serve": "yarn workspace @sh/nextjs serve",
     "next:start": "yarn workspace @sh/nextjs start",
+    "dev:self-hosted": "FACILITATOR_MODE=self-hosted yarn next:dev",
     "postinstall": "husky",
     "precommit": "lint-staged",
     "lint-staged": "lint-staged",
@@ -41,7 +42,8 @@
     "script:create-topic": "tsx scripts/createTopic.ts",
     "script:fund-agent": "tsx scripts/fundAgent.ts",
     "script:publish-policy": "tsx scripts/publishPolicy.ts",
-    "test": "yarn test:smoke && yarn test:guard && yarn test:policy && yarn hardhat:test",
+    "test": "yarn test:smoke && yarn test:guard && yarn test:policy && yarn test:facilitator && yarn hardhat:test",
+    "test:facilitator": "tsx test/facilitator.test.ts",
     "test:guard": "tsx test/spendGuard.test.ts",
     "test:policy": "tsx test/policyRegistry.test.ts",
     "test:smoke": "tsx test/faucetClient.smoke.test.ts"
