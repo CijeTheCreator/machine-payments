@@ -31,7 +31,7 @@ Any template submitted must pass every item in Hedera's automated Stage 1 evalua
   - Monorepo `packages/hardhat` workspace containing `Vault.sol`, deployment scripts (`deploy/00_deploy_vault.ts`), and unit tests.
   - Automatic compilation pipeline generating ABIs and deployed addresses to `packages/nextjs/contracts/deployedContracts.ts` for full TypeScript autocomplete.
   - Configured Hashio JSON-RPC endpoints with testnet deployment (`yarn hardhat:deploy --network hederaTestnet`) and HashScan contract verification (`yarn hardhat:verify:testnet`).
-- [ ] **2. Hosted Zero-Config Testnet Micro-Faucet & CLI Auto-Provisioning:**
+- [x] **2. Hosted Zero-Config Testnet Micro-Faucet & CLI Auto-Provisioning:**
   - Dedicated external serverless micro-dispenser API hosting a funded testnet treasury outside the repository to strictly protect Mechanical Gate 8 (Zero Committed Secrets).
   - Single-command CLI onboarding (`npm run script:fund-agent`): generates a fresh Hedera ED25519/ECDSA keypair, requests initial testnet HBAR from the dispenser, and writes `.env.local` automatically.
   - Zero UI footprint: dispenser interaction is strictly developer/CLI-driven to preserve clean production dApp aesthetics and prevent public treasury draining.

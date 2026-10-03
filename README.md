@@ -41,6 +41,14 @@ This branch uses Yarn workspaces, so clone-and-run needs Yarn. Apps created with
 ```bash
 yarn install
 
+# Auto-provision autonomous agent testnet account & keypair
+yarn script:fund-agent
+# (Or generate offline keypair: yarn script:create-agent)
+
+# Run offline unit & smoke tests
+yarn hardhat:test
+yarn test:smoke
+
 # Terminal 1: local Hedera-forked node
 yarn hardhat:chain
 
@@ -48,7 +56,7 @@ yarn hardhat:chain
 yarn hardhat:deploy --network localhost
 
 # Terminal 3: Next.js app
-yarn next:start
+yarn next:dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) and use the **Debug Contracts** page.

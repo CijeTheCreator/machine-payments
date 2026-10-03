@@ -28,6 +28,10 @@
       {
         "key": "AGENT_PRIVATE_KEY",
         "description": "Hedera private key for autonomous AI agent"
+      },
+      {
+        "key": "FAUCET_URL",
+        "description": "Optional endpoint for hosted zero-config testnet micro-faucet"
       }
     ],
     "outro": {
@@ -38,6 +42,10 @@
             {
               "label": "Install dependencies",
               "command": "yarn install"
+            },
+            {
+              "label": "Auto-provision agent testnet account",
+              "command": "yarn script:fund-agent"
             },
             {
               "label": "Run offline unit tests",
