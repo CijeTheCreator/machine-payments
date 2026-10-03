@@ -1,0 +1,59 @@
+{
+  "name": "machine-machine-payments",
+  "description": "Scaffold-HBAR Agent & Machine Payments template with on-chain Vault consensus spend controls and x402 micropayments",
+  "version": "0.1.0",
+  "create-scaffold-hbar": {
+    "capabilities": {
+      "frontend": ["nextjs-app"],
+      "solidityFramework": ["hardhat"],
+      "packageManager": ["yarn"]
+    },
+    "defaults": {
+      "frontend": "nextjs-app",
+      "solidityFramework": "hardhat",
+      "packageManager": "yarn"
+    },
+    "requirements": {
+      "node": ">=20.18.3"
+    },
+    "envVars": [
+      {
+        "key": "HEDERA_NETWORK",
+        "description": "Hedera network to interact with (testnet or mainnet)"
+      },
+      {
+        "key": "AGENT_ACCOUNT_ID",
+        "description": "Hedera account ID for autonomous AI agent (0.0.X)"
+      },
+      {
+        "key": "AGENT_PRIVATE_KEY",
+        "description": "Hedera private key for autonomous AI agent"
+      }
+    ],
+    "outro": {
+      "sections": [
+        {
+          "title": "Quick Start",
+          "steps": [
+            {
+              "label": "Install dependencies",
+              "command": "yarn install"
+            },
+            {
+              "label": "Run offline unit tests",
+              "command": "yarn hardhat:test"
+            },
+            {
+              "label": "Deploy Vault contract to Hedera Testnet",
+              "command": "yarn hardhat:deploy --network hederaTestnet"
+            },
+            {
+              "label": "Start Next.js dashboard",
+              "command": "yarn next:dev"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

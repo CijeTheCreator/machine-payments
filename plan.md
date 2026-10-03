@@ -27,7 +27,7 @@ Any template submitted must pass every item in Hedera's automated Stage 1 evalua
 
 ## 2. Plan (Implementation Checklist)
 
-- [ ] **1. Standard Hardhat Contract Workspace (`packages/hardhat`) & Auto-Generated ABIs:**
+- [x] **1. Standard Hardhat Contract Workspace (`packages/hardhat`) & Auto-Generated ABIs:**
   - Monorepo `packages/hardhat` workspace containing `Vault.sol`, deployment scripts (`deploy/00_deploy_vault.ts`), and unit tests.
   - Automatic compilation pipeline generating ABIs and deployed addresses to `packages/nextjs/contracts/deployedContracts.ts` for full TypeScript autocomplete.
   - Configured Hashio JSON-RPC endpoints with testnet deployment (`yarn hardhat:deploy --network hederaTestnet`) and HashScan contract verification (`yarn hardhat:verify:testnet`).

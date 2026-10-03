@@ -1,0 +1,39 @@
+# dependencies
+node_modules/
+
+# yarn
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# environment & secrets (Gate 8 enforcement)
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+credentials/
+.secrets/
+
+# build outputs
+dist/
+build/
+artifacts/
+cache/
+typechain-types/
+deployments/localhost/
+deployments/hardhat/
+
+# eslint
+.eslintcache
+
+# misc
+.DS_Store
+*.log
+
+# IDE
+.vscode/
+.idea/
