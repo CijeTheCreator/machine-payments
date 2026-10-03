@@ -74,9 +74,9 @@ Any template submitted must pass every item in Hedera's automated Stage 1 evalua
 - [ ] **9. Interactive Dashboard (Inspired by Hedera Agent Lab):**
   - Next.js dashboard visualizer displaying real-time agent spending streams, budget ceiling meters, and live HCS consensus audit receipts.
   - Dual-mode execution toggle: Autonomous Mode vs. Human-in-the-Loop (HITL) approval modal.
-- [ ] **10. Interactive In-App Documentation Hub (`/docs` & `/docs/api`):**
-  - Built-in Next.js `/docs` portal rendering quickstarts, environment setup guides, architecture overviews, and interactive API definitions driven by structured metadata.
-  - Reference documentation covering native Hedera HIP integrations, CLI scripts, and policy configuration.
+- [x] **10. Interactive Documentation Hub (`docs/getting-started.md` & Architecture Guide):**
+  - Comprehensive documentation article styled after Hedera docs rendering quickstarts, environment setup guides, architecture overviews, and interactive API definitions.
+  - Reference documentation covering native Hedera HIP integrations, CLI scripts, feature #3b (`script:make-route`) spec, and policy configuration.
 - [ ] **11. Proven on Testnet Artifact Verification (Mechanical Gate 7):**
   - Staging and live execution of verifiable testnet proof table in `README.md` and `/verify`:
 

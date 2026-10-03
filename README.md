@@ -1,26 +1,17 @@
-# Scaffold-HBAR — Blank starter
+# Scaffold-HBAR — Agent & Machine Payments
 
-Minimal Hedera dApp baseline: Next.js, Hardhat or Foundry, and Hedera networks (testnet, mainnet, local fork). No opinionated product UI — you add the app on top.
+Complete template for autonomous AI agents, machine-to-machine micropayments (x402), non-custodial spend guards, and Hedera Consensus Service audit registries.
 
-CLI key: `blank` (branch `templates/blank-template`).
-
-The full product guide — CLI flags, npm vs Yarn, deploy, and verify — lives in [Scaffold HBAR on Hedera docs](https://docs.hedera.com/solutions/tools/scaffold-hbar/index). This README is what is specific to **this** template.
+📖 **Comprehensive Guide:** See [Quickstart & Architecture Guide](docs/getting-started.md) for full setup instructions, GIF walkthroughs, and technical specifications.
 
 ## What's in this template
 
-- Next.js App Router with wallet connect, **Debug Contracts**, and a local block explorer
-- Sample HTS contracts (`HederaToken`, `HtsTokenCreator`) so Debug Contracts has something to call
-- Hardhat and Foundry packages (the CLI can drop one)
-- Hashio RPC + Mirror Node config for Hedera testnet and mainnet
-- Package manager: Yarn (recommended) or npm — see `template.json`
-
-Create a project from this template:
-
-```bash
-npm create scaffold-hbar@latest -- --template blank
-```
-
-`npx create-scaffold-hbar@latest --template blank` is equivalent. The CLI also asks for frontend, Solidity framework, network, and package manager.
+- **30-Second Rapid Onboarding:** Auto-provisions Hedera testnet keypairs and funds agent accounts via zero-config serverless micro-dispenser (`yarn script:fund-agent`).
+- **Protected Route Code Scaffolder (`script:make-route`):** Artisan-style CLI generator for instant Next.js App Router x402-gated endpoints.
+- **Multi-Tier Spend Guard Engine:** L0 pre-flight, L1 rolling budgets, L2 `Vault.sol` consensus caps, and HIP-423 HITL scheduled transaction escalation.
+- **Dual-Flavor x402 Facilitators:** Instant public testnet negotiation (`yarn next:dev`) and self-hosted sovereign Next.js route handlers (`yarn dev:self-hosted`).
+- **Tamper-Proof Audit Logging:** HCS audit topic (`agent-spend-audit`) and HCS-2 versioned policy registry.
+- **100% Offline Test Suite:** Unit and integration tests that run completely offline (`yarn test`).
 
 ## Work from this repository
 
