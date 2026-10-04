@@ -30,8 +30,8 @@ A seller's quick start to machine-to-machine payments on Hedera. Onboard autonom
 
 ```bash
 # 1. Scaffold project with create-scaffold-hbar (or clone repository)
-npm create scaffold-hbar@latest -- --template <org>/machine-machine-payments
-cd machine-machine-payments
+npm create scaffold-hbar@latest -- --template CijeTheCreator/machine-payments
+cd machine-payments
 yarn install
 
 # 2. Fund your generated testnet account
@@ -49,8 +49,6 @@ Open [http://localhost:3000](http://localhost:3000) to access the **Agent Onboar
 ---
 
 ## Testnet Proof
-
-Every smart contract, consensus topic, and micro-settlement in this repository is deployed and verified on Hedera Testnet:
 
 | Artifact | Target Testnet Entity | HashScan Link | What It Proves |
 | --- | --- | --- | --- |

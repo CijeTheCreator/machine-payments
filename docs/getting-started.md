@@ -22,8 +22,8 @@ Set up your local development environment and deploy required testnet infrastruc
 
 ```bash
 # 1. Scaffold project using official create-scaffold-hbar
-npm create scaffold-hbar@latest -- --template <org>/machine-machine-payments
-cd machine-machine-payments
+npm create scaffold-hbar@latest -- --template CijeTheCreator/machine-payments
+cd machine-payments
 yarn install
 
 # 2. Fund your generated testnet account
@@ -71,7 +71,10 @@ The agent registers its wallet and appears in your agent registry.
 
 ### Machine discovery via `/skill.md`
 
-Autonomous agents read `http://localhost:3000/skill.md` out of the box to discover available paid routes, price quotes, and payment challenge formats automatically.
+Autonomous agents read `<your-url>/skill.md` out of the box to discover available paid routes, price quotes, and payment challenge formats automatically.
+
+> [!NOTE]
+> In development, this is available at `http://localhost:3000/skill.md`.
 
 ![Agent Skill Discovery](/docs/assets/agent-skill-flow.gif)
 

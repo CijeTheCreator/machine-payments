@@ -1,5 +1,5 @@
 {
-  "name": "machine-machine-payments",
+  "name": "machine-payments",
   "description": "Scaffold-HBAR Agent & Machine Payments template with on-chain Vault consensus spend controls and x402 micropayments",
   "version": "0.1.0",
   "create-scaffold-hbar": {
