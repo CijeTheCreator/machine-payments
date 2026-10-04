@@ -1,6 +1,5 @@
 import { agentRegistry } from "../../registry";
-import { BaseTool, Context } from "@hashgraph/hedera-agent-kit";
-import { Client } from "@hiero-ledger/sdk";
+import { BaseTool } from "@hashgraph/hedera-agent-kit";
 import { z } from "zod";
 
 export const REGISTER_AGENT_TOOL = "register_agent_tool";
@@ -24,7 +23,7 @@ export class RegisterAgentTool extends BaseTool<RegisterAgentParams, RegisterAge
   description = "Registers an agent's DID, description, and service endpoint in the on-chain Identity Registry";
   parameters = registerAgentParameters;
 
-  constructor(_context: Context = {}) {
+  constructor() {
     super();
   }
 
@@ -38,7 +37,7 @@ export class RegisterAgentTool extends BaseTool<RegisterAgentParams, RegisterAge
     };
   }
 
-  async coreAction(normalisedParams: RegisterAgentParams, _context: Context, _client: Client): Promise<any> {
+  async coreAction(normalisedParams: RegisterAgentParams): Promise<any> {
     const identity = await agentRegistry.registerAgent(normalisedParams);
 
     return {

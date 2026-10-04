@@ -1,6 +1,5 @@
 import { agentRegistry } from "../../registry";
-import { BaseTool, Context, TOOL_TYPE, ToolType } from "@hashgraph/hedera-agent-kit";
-import { Client } from "@hiero-ledger/sdk";
+import { BaseTool, TOOL_TYPE, ToolType } from "@hashgraph/hedera-agent-kit";
 import { z } from "zod";
 
 export const VALIDATE_AGENT_TOOL = "validate_agent_tool";
@@ -19,7 +18,7 @@ export class ValidateAgentTool extends BaseTool<ValidateAgentParams, ValidateAge
   parameters = validateAgentParameters;
   toolType: ToolType = TOOL_TYPE.QUERY;
 
-  constructor(_context: Context = {}) {
+  constructor() {
     super();
   }
 
@@ -29,7 +28,7 @@ export class ValidateAgentTool extends BaseTool<ValidateAgentParams, ValidateAge
     };
   }
 
-  async coreAction(normalisedParams: ValidateAgentParams, _context: Context, _client: Client): Promise<any> {
+  async coreAction(normalisedParams: ValidateAgentParams): Promise<any> {
     const agent = await agentRegistry.getAgent(normalisedParams.target);
 
     if (!agent) {

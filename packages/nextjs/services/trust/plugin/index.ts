@@ -16,9 +16,5 @@ export const agentTrustPlugin: Plugin = {
   name: "agent-trust-plugin",
   version: "1.0.0",
   description: "Native ERC-8004 decentralized identity registry, verification, and trust tools for Hedera agents",
-  tools: (context: Context = {}): Tool[] => [
-    new RegisterAgentTool(context),
-    new ValidateAgentTool(context),
-    new VerifyAgentSignatureTool(context),
-  ],
+  tools: (): Tool[] => [new RegisterAgentTool(), new ValidateAgentTool(), new VerifyAgentSignatureTool()],
 };

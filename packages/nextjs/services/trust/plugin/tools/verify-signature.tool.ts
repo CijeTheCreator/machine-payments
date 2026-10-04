@@ -1,6 +1,5 @@
 import { verifyAuthChallenge } from "../../did";
-import { BaseTool, Context, TOOL_TYPE, ToolType } from "@hashgraph/hedera-agent-kit";
-import { Client } from "@hiero-ledger/sdk";
+import { BaseTool, TOOL_TYPE, ToolType } from "@hashgraph/hedera-agent-kit";
 import { z } from "zod";
 
 export const VERIFY_AGENT_SIGNATURE_TOOL = "verify_agent_signature_tool";
@@ -20,7 +19,7 @@ export class VerifyAgentSignatureTool extends BaseTool<VerifyAgentSignatureParam
   parameters = verifyAgentSignatureParameters;
   toolType: ToolType = TOOL_TYPE.QUERY;
 
-  constructor(_context: Context = {}) {
+  constructor() {
     super();
   }
 
@@ -32,7 +31,7 @@ export class VerifyAgentSignatureTool extends BaseTool<VerifyAgentSignatureParam
     };
   }
 
-  async coreAction(normalisedParams: VerifyAgentSignatureParams, _context: Context, _client: Client): Promise<any> {
+  async coreAction(normalisedParams: VerifyAgentSignatureParams): Promise<any> {
     const result = await verifyAuthChallenge(
       normalisedParams.did,
       normalisedParams.timestamp,
