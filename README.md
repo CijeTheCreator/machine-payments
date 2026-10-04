@@ -1,77 +1,106 @@
 # Scaffold-HBAR — Agent & Machine Payments
 
-Complete template for autonomous AI agents, machine-to-machine micropayments (x402), non-custodial spend guards, and Hedera Consensus Service audit registries.
+Complete production template for autonomous AI agents, machine-to-machine micropayments (x402), non-custodial spend guards, ERC-8004 agent trust registries, and Hedera Consensus Service audit registries.
 
-📖 **Comprehensive Guide:** See [Quickstart & Architecture Guide](docs/getting-started.md) for full setup instructions, GIF walkthroughs, and technical specifications.
+📖 **Comprehensive Guide:** See [Quickstart & Architecture Guide](docs/getting-started.md) for full setup instructions, architecture deep-dives, and technical specifications.
+
+---
 
 ## What's in this template
 
-- **30-Second Rapid Onboarding:** Auto-provisions Hedera testnet keypairs and funds agent accounts via zero-config serverless micro-dispenser (`yarn script:fund-agent`).
-- **Protected Route Code Scaffolder (`script:make-route`):** Artisan-style CLI generator for instant Next.js App Router x402-gated endpoints.
-- **Multi-Tier Spend Guard Engine:** L0 pre-flight, L1 rolling budgets, L2 `Vault.sol` consensus caps, and HIP-423 HITL scheduled transaction escalation.
+- **Zero-Secrets Merchant Onboarding:** Automated offline ECDSA key generation on `postinstall` with zero external serverless dispenser dependencies.
+- **Unified Infrastructure Preparation (`yarn script:prepare`):** One-command deployer that verifies mirror node balance, deploys `Vault.sol` and `AgentRegistry.sol`, and provisions 3 tamper-proof HCS topics.
+- **Protected Route Code Scaffolder (`yarn script:make-route`):** Artisan-style CLI generator creating ready-to-run Next.js App Router x402-gated endpoints with composable middlewares.
+- **Agent Fleet Onboarding & Spend Dashboard:** Self-service onboarding portal (`/onboard`), dynamic machine-readable agent skill (`/skill.md`), and real-time fleet spend dashboard (`/dashboard`).
+- **ERC-8004 Agent Identity & Trust:** On-chain registry (`AgentRegistry.sol`), Hedera Agent Kit v4 trust plugin, and `withAgentTrust` middleware.
+- **Multi-Tier Spend Guard Engine:** L0 pre-flight, L1 rolling 24-hour budgets, L2 `Vault.sol` consensus caps, and HIP-423 HITL scheduled transaction escalation.
 - **Dual-Flavor x402 Facilitators:** Instant public testnet negotiation (`yarn next:dev`) and self-hosted sovereign Next.js route handlers (`yarn dev:self-hosted`).
-- **Tamper-Proof Audit Logging:** HCS audit topic (`agent-spend-audit`) and HCS-2 versioned policy registry.
-- **100% Offline Test Suite:** Unit and integration tests that run completely offline (`yarn test`).
+- **Tamper-Proof Audit Logging:** HCS spend audit topic (`agent-spend-audit`), trust audit topic (`agent-trust-audit`), and HCS-2 versioned policy registry.
+- **100% Offline Test Suite:** Fast unit and integration tests executing completely offline without live RPC or funded accounts (`yarn test`).
 
-## Work from this repository
+---
 
-This branch uses Yarn workspaces, so clone-and-run needs Yarn. Apps created with the CLI can use Yarn (default) or npm; see the [docs](https://docs.hedera.com/solutions/tools/scaffold-hbar/index).
+## Quickstart
 
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/) ≥ 20.18.3
 - [Git](https://git-scm.com/) with `user.name` and `user.email` configured
-- [Yarn](https://yarnpkg.com/) (default; required if you clone this repo) or npm if you scaffolded with the CLI. For Yarn, install via Corepack:
-  ```bash
-  corepack enable && corepack prepare yarn@stable --activate
-  ```
-- **If using Foundry:** [Foundry](https://book.getfoundry.sh/getting-started/installation) (`forge`, `cast`, `anvil`)
+- [Yarn](https://yarnpkg.com/) (`corepack enable && corepack prepare yarn@stable --activate`)
 
-### Quick start
+### Setup in 4 Steps
 
 ```bash
+# 1. Clone repository and install dependencies (auto-generates offline keys)
+git clone https://github.com/<org>/machine-machine-payments.git
+cd machine-machine-payments
 yarn install
 
-# Auto-provision autonomous agent testnet account & keypair
-yarn script:fund-agent
-# (Or generate offline keypair: yarn script:create-agent)
+# 2. Fund your generated testnet operator account
+# Visit https://portal.hedera.com/faucet and paste the EVM address or Account ID printed during install
 
-# Run offline unit & smoke tests
-yarn hardhat:test
-yarn test:smoke
+# 3. Deploy contracts and provision HCS consensus topics
+yarn script:prepare
 
-# Terminal 1: local Hedera-forked node
-yarn hardhat:chain
-
-# Terminal 2: deploy to that node (8545)
-yarn hardhat:deploy --network localhost
-
-# Terminal 3: Next.js app
+# 4. Boot the Next.js development server
 yarn next:dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) and use the **Debug Contracts** page.
+Open [http://localhost:3000](http://localhost:3000) to access the **Agent Onboarding** portal, view the **Fleet Spend Dashboard** at `/dashboard`, inspect contracts at `/debug`, or verify audit trails at `/verify`.
 
-Frontend only (no local chain):
+---
+
+## Developer Commands
+
+### Core Workflows
+
+| Command | Workspace | Description |
+| --- | --- | --- |
+| `yarn script:prepare` | Root | Verifies balance, deploys `Vault` + `AgentRegistry`, creates 3 HCS topics |
+| `yarn script:make-route` | Root | Scaffolds x402-protected App Router endpoints (`--name`, `--price`, `--trust`) |
+| `yarn next:dev` | Root | Starts Next.js app in public facilitator mode (`blocky402.com`) |
+| `yarn dev:self-hosted` | Root | Starts Next.js app with self-hosted sovereign facilitator route handlers |
+
+### 100% Offline Test Suite
 
 ```bash
-yarn install
-yarn next:dev
+# Run all offline test suites across packages
+yarn test
+
+# Run individual test suites
+yarn test:scaffold     # Validates prepare balance checks and makeRoute CLI generator
+yarn test:guard        # Validates Spend Guard pre-flight, budgets, and atomic holds
+yarn test:policy       # Validates HCS-2 registry serialization and replay parsing
+yarn test:facilitator  # Validates x402 capability discovery, signatures, and mock settlement
+yarn test:trust        # Validates ERC-8004 DID validation, signatures, and HAK plugin
+yarn test:middleware   # Validates withX402, withSpendGuard, and withAgentTrust pipeline
+yarn test:agents       # Validates agent onboarding, claim code lifecycle, and store
+yarn hardhat:test      # Validates Vault.sol, AgentRegistry.sol, and HTS precompile mocks
 ```
 
-`yarn hardhat:deploy` without `--network localhost` targets the in-process `hardhat` network, not the long-running fork. Local Hardhat and Foundry workflows are in [`packages/hardhat/README.md`](packages/hardhat/README.md) and [`packages/foundry/README.md`](packages/foundry/README.md). Deploy and verify on testnet/mainnet: [Hedera docs](https://docs.hedera.com/solutions/tools/scaffold-hbar/index#deploying-to-testnet).
+### Build & Quality Checks
 
-## Project layout
+```bash
+yarn lint
+yarn next:check-types
+yarn hardhat:check-types
+yarn next:build
+```
 
-- **packages/hardhat** — Hardhat config, contracts, `deploy/` scripts, tests
-- **packages/foundry** — Forge config, contracts, `script/` deploy scripts, tests
-- **packages/nextjs** — Next.js app, RainbowKit, wagmi, scaffold config
+---
 
-Network and RPC URLs are in `packages/hardhat/hardhat.config.ts` and `packages/foundry/foundry.toml` respectively.
+## Project Layout
+
+- **packages/hardhat** — Hardhat configuration, Solidity contracts (`Vault.sol`, `AgentRegistry.sol`), deployment scripts, and unit tests
+- **packages/nextjs** — Next.js 14 App Router application, Spend Guard engine, x402 facilitator, Agent Trust plugin, onboarding portal, and spend dashboard
+- **scripts** — Infrastructure CLI utilities (`prepare.ts`, `makeRoute.ts`, `postinstallKeygen.ts`)
+- **test** — Offline test suites enforcing all Stage 1 Mechanical Eligibility Gates
+
+---
 
 ## Links
 
-- [Scaffold HBAR docs](https://docs.hedera.com/solutions/tools/scaffold-hbar/index)
-- [create-scaffold-hbar](https://github.com/hedera-dev/create-scaffold-hbar) — CLI
-- [Hedera Portal faucet](https://portal.hedera.com/faucet)
-- [HashScan](https://hashscan.io/)
+- [Hedera Documentation](https://docs.hedera.com)
+- [Hedera Portal Faucet](https://portal.hedera.com/faucet)
+- [HashScan Explorer](https://hashscan.io/)
+- [Scaffold-HBAR](https://github.com/hedera-dev/scaffold-hbar)
