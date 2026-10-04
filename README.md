@@ -61,6 +61,8 @@ Every smart contract, consensus topic, and micro-settlement in this repository i
 | HCS Spend Audit Topic | Topic `0.0.10857493` | [View on HashScan](https://hashscan.io/testnet/topic/0.0.10857493) | Consensus audit trail recording real-time `ALLOW`, `BLOCK`, and `ESCALATE` payment decisions |
 | HCS Agent Trust Topic | Topic `0.0.10857496` | [View on HashScan](https://hashscan.io/testnet/topic/0.0.10857496) | Tamper-proof audit log for agent identity registrations and DID authentication receipts |
 | Scaffolder Payment (`/api/weather`) | Tx `0.0.6493119@1791134122.243336991` | [View on HashScan](https://hashscan.io/testnet/transaction/0.0.6493119-1791134122-243336991) | Live end-to-end machine x402 payment settlement (1 HBAR) to `Vault` with HCS audit receipt |
+| Self-Hosted Facilitator (`/settle`) | Tx `0.0.6493119@1791137849.119166721` | [View on HashScan](https://hashscan.io/testnet/transaction/0.0.6493119-1791137849-119166721) | Sovereign self-hosted facilitator co-signing and direct testnet consensus settlement (1 HBAR) |
+| Self-Hosted Facilitator (`/resource`) | Tx `0.0.6493119@1791137851.863823814` | [View on HashScan](https://hashscan.io/testnet/transaction/0.0.6493119-1791137851-863823814) | Full client-to-resource x402 negotiation, verification, and settlement via self-hosted facilitator with authenticated payload unlock |
 
 ---
 

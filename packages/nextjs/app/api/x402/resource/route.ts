@@ -39,7 +39,11 @@ export const GET = withX402(
   }),
   {
     priceTinybar: RESOURCE_PRICE_TINYBAR,
-    payTo: process.env.AGENT_ACCOUNT_ID || DEFAULT_SELLER_ACCOUNT,
+    payTo:
+      process.env.NEXT_PUBLIC_VAULT_ADDRESS ||
+      process.env.VAULT_CONTRACT_ID ||
+      process.env.AGENT_ACCOUNT_ID ||
+      DEFAULT_SELLER_ACCOUNT,
     memo: "x402-access-agent-insight",
   },
 );

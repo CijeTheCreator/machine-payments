@@ -21,7 +21,7 @@ export function getActiveFacilitatorConfig() {
   const feePayer =
     process.env.FACILITATOR_OPERATOR_ID ||
     config.facilitator.feePayerAccountId ||
-    (isSelfHosted ? "0.0.9839454" : DEFAULT_HOSTED_FEE_PAYER);
+    (isSelfHosted ? process.env.HEDERA_ACCOUNT_ID || "0.0.9839454" : DEFAULT_HOSTED_FEE_PAYER);
 
   return {
     mode: config.facilitator.mode,
