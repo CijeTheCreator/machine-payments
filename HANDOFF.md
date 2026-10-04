@@ -56,9 +56,10 @@ This document records the exact state of implementation, completed mechanical ga
    - 5-stage live lifecycle stepper (`waiting` -> `claimed` -> `wallet` -> `awaiting_funding` -> `active`).
    - Real-time fleet spend dashboard (`/dashboard`): 24h/7d spend KPIs, daily spend chart, agent fleet status table, mirror node balance polling, and HashScan consensus settlement links.
 
-8. **Item #10: Interactive Documentation & Architecture Guide**
-   - Comprehensive guide in `docs/getting-started.md` covering all 6 core workflows and architecture layers.
-   - Updated `README.md` reflecting current prepare script, route scaffolder, and offline test suites.
+8. **Item #10: Concise Product Documentation & Technical Reference**
+   - Action-oriented, outcome-first user guide in `docs/getting-started.md` following The Concise Product Documentation Rules.
+   - In-depth engineering specifications, precompiles, and Mermaid diagrams in `docs/architecture.md`.
+   - Streamlined `README.md` serving as the repository front door.
 
 9. **Item #12: ERC-8004 Agent Identity & Trust System**
    - On-chain registry `AgentRegistry.sol` for DID registration and cryptographic verification.
