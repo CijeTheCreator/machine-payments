@@ -124,7 +124,7 @@ function OnboardingContent() {
 
   const siteOrigin = typeof window !== "undefined" ? window.location.origin : "";
   const claimCode = createdAgent?.claimCode || "";
-  const agentPrompt = `Using the skill in ${siteOrigin}/skill.md, onboard the agent with the claim code ${claimCode}`;
+  const agentPrompt = `Install the skill from ${siteOrigin}/skill.md, then follow its instructions to onboard with claim code ${claimCode}`;
 
   const handleCopyPrompt = () => {
     if (!agentPrompt) return;

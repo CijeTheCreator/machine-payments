@@ -1,0 +1,20 @@
+[
+  {
+    "name": "weather",
+    "path": "/api/weather",
+    "priceHbar": 1,
+    "priceTinybar": "100000000",
+    "description": "Current weather forecast data and climate conditions",
+    "trust": true,
+    "guard": true
+  },
+  {
+    "name": "resource",
+    "path": "/api/x402/resource",
+    "priceHbar": 1,
+    "priceTinybar": "100000000",
+    "description": "Protected premium microservice resource",
+    "trust": false,
+    "guard": true
+  }
+]

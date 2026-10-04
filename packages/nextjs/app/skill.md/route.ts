@@ -1,12 +1,80 @@
 import { NextRequest, NextResponse } from "next/server";
+import fs from "fs";
+import path from "path";
 
 export const dynamic = "force-dynamic";
+
+interface RouteManifestEntry {
+  name: string;
+  path: string;
+  priceHbar: number;
+  priceTinybar: string;
+  description: string;
+  trust?: boolean;
+  guard?: boolean;
+}
+
+const defaultRoutes: RouteManifestEntry[] = [
+  {
+    name: "weather",
+    path: "/api/weather",
+    priceHbar: 1,
+    priceTinybar: "100000000",
+    description: "Current weather forecast data and climate conditions",
+    trust: true,
+    guard: true,
+  },
+  {
+    name: "resource",
+    path: "/api/x402/resource",
+    priceHbar: 1,
+    priceTinybar: "100000000",
+    description: "Protected premium microservice resource",
+    trust: false,
+    guard: true,
+  },
+];
+
+function getRoutes(): RouteManifestEntry[] {
+  try {
+    const cwd = process.cwd();
+    const candidatePaths = [
+      path.resolve(cwd, "app/routes-manifest.json"),
+      path.resolve(cwd, "packages/nextjs/app/routes-manifest.json"),
+    ];
+
+    for (const p of candidatePaths) {
+      if (fs.existsSync(p)) {
+        const raw = fs.readFileSync(p, "utf-8");
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      }
+    }
+  } catch {
+    // Return fallback defaults on error
+  }
+  return defaultRoutes;
+}
 
 export async function GET(req: NextRequest) {
   // Determine site origin dynamically from incoming request headers
   const host = req.headers.get("x-forwarded-host") || req.headers.get("host") || "localhost:3000";
   const proto = req.headers.get("x-forwarded-proto") || "http";
   const origin = `${proto}://${host}`;
+
+  const routes = getRoutes();
+  const routesTable = routes
+    .map(
+      r =>
+        `| \`${r.path}\` | \`${r.priceHbar} HBAR\` | \`${r.priceTinybar}\` | ${r.description} | ${
+          r.trust ? "Required (ERC-8004)" : "Public"
+        } |`,
+    )
+    .join("\n");
+
+  const sampleRoute = routes[0]?.path || "/api/x402/resource";
 
   const skillContent = `# Scaffold-HBAR Agent & Machine Payments — Agent Skill
 
@@ -20,8 +88,7 @@ This document instructs you on how to initialize your non-custodial wallet using
 Your operator provides you with a single onboarding directive containing a one-time claim code:
 
 \`\`\`
-Install the skill from ${origin}/skill.md and set up this agent by running:
-  curl -X POST ${origin}/api/agents/claim -H "Content-Type: application/json" -d '{"claim": "<CLAIM_CODE>", "walletAddress": "<YOUR_WALLET_ADDRESS>", "accountId": "<YOUR_ACCOUNT_ID>", "did": "did:hedera:testnet:<YOUR_ACCOUNT_ID>"}'
+Install the skill from ${origin}/skill.md, then follow its instructions to onboard with claim code <CLAIM_CODE>
 \`\`\`
 
 **Security Guarantee:** No raw private keys or permanent API tokens are ever passed into chat or prompt transcripts. The \`claim_...\` string is single-use and expires in 24 hours.
@@ -80,10 +147,18 @@ Once funded, the merchant's backend will detect your balance via Hedera Mirror N
 
 ## 4. Invoking Protected x402 Endpoints
 
+The following monetized endpoints are currently active and discoverable on this service:
+
+| Endpoint | Price (HBAR) | Price (tinybars) | Description | Agent Trust |
+| --- | --- | --- | --- | --- |
+${routesTable}
+
+### Example Call
+
 When invoking monetized service routes, include your agent credentials in the request headers:
 
 \`\`\`bash
-curl -X GET "${origin}/api/x402/resource" \\
+curl -X GET "${origin}${sampleRoute}" \\
   -H "X-Agent-ID: <YOUR_AGENT_ID>" \\
   -H "Authorization: Bearer <YOUR_API_KEY>"
 \`\`\`
@@ -96,7 +171,7 @@ curl -X GET "${origin}/api/x402/resource" \\
 ## 5. Live Spend Telemetry
 
 Your operator can monitor your spending caps, budget ceiling meters, and testnet consensus receipts in real time on the dashboard:
-👉 **${origin}/**
+👉 **${origin}/dashboard**
 `;
 
   return new NextResponse(skillContent, {

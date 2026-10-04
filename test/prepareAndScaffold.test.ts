@@ -30,17 +30,19 @@ async function runTests() {
 
   // Test 3: parseArgs() flag parsing
   console.log("\nTest 3: parseArgs() CLI argument parsing...");
-  const parsed1 = parseArgs(["--name", "sentiment", "--price", "0.5", "--trust"]);
+  const parsed1 = parseArgs(["--name", "sentiment", "--price", "0.5", "--trust", "--description", "Market sentiment analysis"]);
   assert.strictEqual(parsed1.name, "sentiment");
   assert.strictEqual(parsed1.priceHbar, 0.5);
   assert.strictEqual(parsed1.trust, true);
   assert.strictEqual(parsed1.noGuard, false);
+  assert.strictEqual(parsed1.description, "Market sentiment analysis");
 
-  const parsed2 = parseArgs(["--name=weather", "--price=2", "--no-guard", "--path=api/v1/weather"]);
+  const parsed2 = parseArgs(["--name=weather", "--price=2", "--no-guard", "--path=api/v1/weather", "-d", "Live weather feed"]);
   assert.strictEqual(parsed2.name, "weather");
   assert.strictEqual(parsed2.priceHbar, 2);
   assert.strictEqual(parsed2.noGuard, true);
   assert.strictEqual(parsed2.customPath, "api/v1/weather");
+  assert.strictEqual(parsed2.description, "Live weather feed");
   console.log("  ✔ Parses all CLI flags and defaults accurately");
 
   // Test 4: renderRouteCode() generates correct TypeScript template with TODO and middlewares
@@ -96,6 +98,14 @@ async function runTests() {
     assert.ok(fs.existsSync(res.filePath), "Generated route file must exist on disk");
     assert.strictEqual(res.priceTinybar, "10000000", "0.1 HBAR must be 10,000,000 tinybars");
     assert.strictEqual(res.routeUrl, "/api/test-service", "Route URL must match relative path");
+    assert.strictEqual(res.description, "test-service service", "Default description should match service name");
+
+    const manifestFile = path.resolve(tempProjectDir, "packages/nextjs/app/routes-manifest.json");
+    assert.ok(fs.existsSync(manifestFile), "routes-manifest.json should be created/updated");
+    const manifestJson = JSON.parse(fs.readFileSync(manifestFile, "utf-8"));
+    assert.strictEqual(manifestJson.length, 1);
+    assert.strictEqual(manifestJson[0].name, "test-service");
+    assert.strictEqual(manifestJson[0].description, "test-service service");
 
     const content = fs.readFileSync(res.filePath, "utf-8");
     assert.ok(content.includes("testServiceHandler"), "Handler name should be camelCased");
@@ -110,9 +120,17 @@ async function runTests() {
     );
 
     // Overwrite with --force should succeed
-    const forcedRes = generateRouteFile({ name: "test-service", force: true, priceHbar: 5 }, tempProjectDir);
+    const forcedRes = generateRouteFile(
+      { name: "test-service", force: true, priceHbar: 5, description: "Updated test service" },
+      tempProjectDir,
+    );
     assert.strictEqual(forcedRes.priceTinybar, "500000000");
-    console.log("  ✔ Successfully created route file, checked URL, and enforced overwrite protection");
+    assert.strictEqual(forcedRes.description, "Updated test service");
+
+    const updatedManifest = JSON.parse(fs.readFileSync(manifestFile, "utf-8"));
+    assert.strictEqual(updatedManifest.length, 1);
+    assert.strictEqual(updatedManifest[0].description, "Updated test service");
+    console.log("  ✔ Successfully created route file, updated routes-manifest.json, and enforced overwrite protection");
   } finally {
     fs.rmSync(tempProjectDir, { recursive: true, force: true });
   }
