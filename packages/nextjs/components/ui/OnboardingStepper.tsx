@@ -2,17 +2,18 @@
 
 import React from "react";
 import { AgentState } from "@/services/agents/types";
+import { CheckIcon } from "@heroicons/react/24/outline";
 
 interface Props {
   currentState: AgentState | string;
 }
 
 const STEPS = [
-  { key: "minted", label: "1. Minted", desc: "Claim code created" },
-  { key: "initializing", label: "2. Claimed", desc: "Agent claimed credentials" },
-  { key: "wallet", label: "3. Wallet Attached", desc: "OWS public key registered" },
-  { key: "awaiting_funding", label: "4. Awaiting Deposit", desc: "Funding testnet balance" },
-  { key: "active", label: "5. Active", desc: "Ready for machine payments" },
+  { key: "minted", label: "Minted", desc: "Claim code generated" },
+  { key: "initializing", label: "Claimed", desc: "Agent claimed credentials" },
+  { key: "wallet", label: "Wallet Attached", desc: "OWS keys registered" },
+  { key: "awaiting_funding", label: "Awaiting Deposit", desc: "Funding testnet balance" },
+  { key: "active", label: "Active", desc: "Ready for machine payments" },
 ];
 
 function getStepIndex(state: string): number {
@@ -37,108 +38,51 @@ export function OnboardingStepper({ currentState }: Props) {
   const activeIdx = getStepIndex(currentState);
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: "1rem",
-        padding: "1.25rem",
-        backgroundColor: "#0c0c0c",
-        borderRadius: "12px",
-        border: "1px solid rgba(255, 255, 255, 0.08)",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          fontSize: "0.75rem",
-          color: "rgba(255, 255, 255, 0.5)",
-          textTransform: "uppercase",
-          letterSpacing: "0.06em",
-          fontWeight: 600,
-        }}
-      >
-        <span>Agent Onboarding Stepper</span>
-        <span style={{ color: activeIdx === 4 ? "#4ade80" : "#60a5fa", fontFamily: "monospace" }}>
+    <div className="border border-[#00000014] bg-white rounded-xl p-4 space-y-3 shadow-xs">
+      <div className="flex justify-between items-center text-[11px] font-mono uppercase tracking-wider text-[#797981]">
+        <span>Lifecycle Status</span>
+        <span className={activeIdx === 4 ? "text-[#186a23] font-semibold" : "text-[#005fad] font-semibold"}>
           Step {activeIdx + 1} of 5
         </span>
       </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(5, 1fr)",
-          gap: "0.5rem",
-          position: "relative",
-        }}
-      >
+      <div className="space-y-2.5">
         {STEPS.map((step, idx) => {
           const isDone = idx < activeIdx || (idx === 4 && activeIdx === 4);
           const isCurrent = idx === activeIdx && activeIdx < 4;
-          const isPending = idx > activeIdx;
-
-          let borderColor = "rgba(255, 255, 255, 0.08)";
-          let bgColor = "#111111";
-          let textColor = "rgba(255, 255, 255, 0.4)";
-          let dotColor = "#333";
-
-          if (isDone) {
-            borderColor = "rgba(74, 222, 128, 0.4)";
-            bgColor = "rgba(74, 222, 128, 0.06)";
-            textColor = "#4ade80";
-            dotColor = "#4ade80";
-          } else if (isCurrent) {
-            borderColor = "rgba(96, 165, 250, 0.5)";
-            bgColor = "rgba(96, 165, 250, 0.08)";
-            textColor = "#60a5fa";
-            dotColor = "#60a5fa";
-          }
 
           return (
             <div
               key={step.key}
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "0.35rem",
-                padding: "0.75rem",
-                borderRadius: "8px",
-                border: `1px solid ${borderColor}`,
-                backgroundColor: bgColor,
-                transition: "all 200ms ease",
-              }}
+              className={`flex items-start gap-3 p-2 rounded-lg transition-colors ${
+                isCurrent ? "bg-[#f6f6f9] border border-[#00000014]" : "bg-transparent"
+              }`}
             >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.4rem",
-                  fontSize: "0.72rem",
-                  fontWeight: 600,
-                  color: textColor,
-                }}
-              >
-                <span
-                  style={{
-                    width: "7px",
-                    height: "7px",
-                    borderRadius: "50%",
-                    backgroundColor: dotColor,
-                    boxShadow: isCurrent ? `0 0 8px ${dotColor}` : "none",
-                  }}
-                />
-                {step.label}
+              {/* Step indicator circle */}
+              <div className="mt-0.5 shrink-0">
+                {isDone ? (
+                  <div className="size-4 rounded-full bg-[#186a23] text-white flex items-center justify-center">
+                    <CheckIcon className="size-2.5 stroke-[3]" />
+                  </div>
+                ) : isCurrent ? (
+                  <div className="size-4 rounded-full border-2 border-[#005fad] flex items-center justify-center">
+                    <div className="size-1.5 rounded-full bg-[#005fad] animate-pulse" />
+                  </div>
+                ) : (
+                  <div className="size-4 rounded-full border border-black/20 bg-white" />
+                )}
               </div>
-              <div
-                style={{
-                  fontSize: "0.66rem",
-                  color: isPending ? "rgba(255, 255, 255, 0.25)" : "rgba(255, 255, 255, 0.6)",
-                  lineHeight: 1.3,
-                }}
-              >
-                {step.desc}
+
+              {/* Step content */}
+              <div className="min-w-0 flex-1">
+                <div
+                  className={`text-xs font-semibold leading-tight ${
+                    isDone ? "text-[#186a23]" : isCurrent ? "text-[#111114]" : "text-[#797981]"
+                  }`}
+                >
+                  {step.label}
+                </div>
+                <div className="text-[11px] text-[#797981] mt-0.5 leading-tight">{step.desc}</div>
               </div>
             </div>
           );

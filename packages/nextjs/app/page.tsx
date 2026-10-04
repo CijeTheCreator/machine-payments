@@ -1,25 +1,10 @@
 "use client";
 
 import React, { Suspense, useCallback, useEffect, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AgentStatePill } from "@/components/ui/AgentStatePill";
-import { KpiRow, KpiTile } from "@/components/ui/KpiTile";
-import { SpendChart } from "@/components/ui/SpendChart";
 import { AgentRecord, DashboardStats, SpendEvent } from "@/services/agents/types";
-import {
-  ArrowPathIcon,
-  ArrowRightOnRectangleIcon,
-  ArrowTopRightOnSquareIcon,
-  BanknotesIcon,
-  BoltIcon,
-  CheckIcon,
-  ClipboardDocumentIcon,
-  CodeBracketIcon,
-  PencilSquareIcon,
-  ShieldCheckIcon,
-  UserPlusIcon,
-} from "@heroicons/react/24/outline";
+import { ArrowPathIcon, ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 
 function DashboardContent() {
   const router = useRouter();
@@ -37,7 +22,6 @@ function DashboardContent() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [copiedHeader, setCopiedHeader] = useState(false);
 
   // Spend cap management state
   const [editingCap, setEditingCap] = useState(false);
@@ -98,7 +82,7 @@ function DashboardContent() {
   useEffect(() => {
     if (!activeSession?.id) return;
     fetchAgentData();
-    const interval = setInterval(fetchAgentData, 10000); // 10s auto-refresh
+    const interval = setInterval(fetchAgentData, 10000);
     return () => clearInterval(interval);
   }, [activeSession?.id, fetchAgentData]);
 
@@ -141,7 +125,7 @@ function DashboardContent() {
       const data = await res.json();
       setAgent(data.agent);
       setEditingCap(false);
-      setCapSuccess(`Spend cap updated to ${val} HBAR`);
+      setCapSuccess("Spend cap updated");
       setTimeout(() => setCapSuccess(null), 3000);
     } catch (err) {
       setCapError((err as Error).message || "Update failed");
@@ -150,351 +134,261 @@ function DashboardContent() {
     }
   };
 
-  // Filter recent settlements for this specific agent
-  const agentActivity = (stats?.recentActivity || []).filter(
-    (e: SpendEvent) => e.agentId === activeSession?.id || (agent?.accountId && e.agentId === agent.accountId),
-  );
-
-  const spentHbar = (Number(agent?.totalSpentTinybar || "0") / 1e8).toFixed(4);
-  const capHbar = agent?.spendLimitHbar ?? 10;
-  const percentUsed = Math.min(100, (Number(spentHbar) / capHbar) * 100);
-
-  const siteOrigin = typeof window !== "undefined" ? window.location.origin : "http://localhost:3000";
-  const sampleRequestCmd = `curl -X GET "${siteOrigin}/api/x402/resource" \\\n  -H "X-Agent-ID: ${agent?.id || activeSession?.id || ""}"`;
-
-  if (loading && !agent) {
+  if (loading) {
     return (
-      <div className="min-h-screen bg-[#050505] flex items-center justify-center text-white/50 font-mono text-sm">
-        <ArrowPathIcon className="w-5 h-5 animate-spin mr-2 text-[#4ade80]" /> Loading agent spend telemetry…
+      <div className="flex-1 bg-[#fafafb] flex items-center justify-center p-8">
+        <div className="text-xs font-mono text-[#797981] flex items-center gap-2">
+          <ArrowPathIcon className="size-4 animate-spin" />
+          Loading telemetry...
+        </div>
       </div>
     );
   }
 
+  const spendEvents: SpendEvent[] = stats?.recentActivity || [];
+
   return (
-    <div className="min-h-screen bg-[#050505] text-[#f4f4f4] py-10 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-5xl mx-auto flex flex-col gap-8">
-        {/* Agent Profile Header */}
-        <div className="bg-[#0c0c0c] border border-white/10 rounded-2xl p-6 sm:p-8 flex flex-col gap-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-white/10 pb-5">
-            <div>
-              <div className="flex items-center gap-2 text-[#4ade80] text-xs uppercase font-mono tracking-widest mb-1">
-                <span>●</span> Buyer Agent Telemetry
-              </div>
-              <div className="flex items-center gap-3">
-                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
-                  {agent?.label || activeSession?.label || "Client Agent"}
-                </h1>
-                <AgentStatePill state={agent?.state || "minted"} />
-              </div>
-              <div className="text-xs text-white/40 font-mono mt-1">ID: {agent?.id || activeSession?.id}</div>
-            </div>
-
-            <div className="flex items-center gap-2 self-start sm:self-auto">
-              <Link
-                href="/onboarding?new=1"
-                className="flex items-center gap-1.5 bg-[#141414] hover:bg-white/10 border border-white/10 rounded-lg text-xs font-mono py-2 px-3 text-white/70 hover:text-white transition-colors"
-                title="Provision another agent"
-              >
-                <UserPlusIcon className="w-4 h-4 text-[#4ade80]" />
-                <span className="hidden sm:inline">Add Agent</span>
-              </Link>
-
-              <button
-                onClick={handleManualRefresh}
-                disabled={refreshing || loading}
-                className="p-2 bg-[#141414] hover:bg-white/10 border border-white/10 rounded-lg text-white/70 transition-colors"
-                title="Refresh telemetry"
-              >
-                <ArrowPathIcon className={`w-4 h-4 ${refreshing ? "animate-spin text-[#4ade80]" : ""}`} />
-              </button>
-
-              <button
-                onClick={handleSignOut}
-                className="flex items-center gap-1.5 bg-[#141414] hover:bg-red-500/10 hover:text-red-400 border border-white/10 rounded-lg text-xs font-mono py-2 px-3 text-white/70 transition-colors"
-              >
-                <ArrowRightOnRectangleIcon className="w-4 h-4" />
-                Disconnect
-              </button>
-            </div>
-          </div>
-
-          {/* Quick Identity Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs font-mono">
-            <div className="p-3 bg-[#111111] rounded-xl border border-white/5">
-              <div className="text-white/40 uppercase text-[10px]">Hedera Account</div>
-              <div className="text-white mt-1 font-semibold truncate select-all">
-                {agent?.accountId || activeSession?.accountId || "Unregistered"}
-              </div>
-            </div>
-
-            <div className="p-3 bg-[#111111] rounded-xl border border-white/5">
-              <div className="text-white/40 uppercase text-[10px]">OWS Wallet (EVM)</div>
-              <div className="text-white mt-1 font-semibold truncate select-all">
-                {agent?.walletAddress || activeSession?.walletAddress || "Pending Handshake"}
-              </div>
-            </div>
-
-            <div className="p-3 bg-[#111111] rounded-xl border border-white/5">
-              <div className="text-white/40 uppercase text-[10px]">Live Mirror Balance</div>
-              <div className="text-[#4ade80] mt-1 font-semibold">{Number(balance.hbar).toFixed(4)} HBAR</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Spend Cap Safety Meter */}
-        <div className="bg-[#0c0c0c] border border-white/10 rounded-2xl p-6 flex flex-col gap-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-mono">
-            <span className="text-white font-semibold flex items-center gap-2">
-              <BanknotesIcon className="w-4 h-4 text-[#4ade80]" /> Cumulative Spend Safety Cap
-            </span>
+    <div className="flex-1 bg-[#fafafb] flex flex-col min-h-screen text-[#111114] select-none">
+      {/* Main View Container */}
+      <div className="max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
+        {/* Title and Agent Identity Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
+          <div>
             <div className="flex items-center gap-3">
-              <span className="text-white/60">
-                <strong className="text-white">{spentHbar}</strong> / {capHbar} HBAR ({percentUsed.toFixed(1)}%)
+              <h1 className="text-xl font-bold tracking-tight text-[#111114]">Autonomous Payments</h1>
+              {agent && <AgentStatePill state={agent.state} />}
+            </div>
+            <div className="text-xs text-[#797981] mt-1 flex flex-wrap items-center gap-2">
+              <span>
+                Agent: <strong className="text-[#111114] font-medium">{agent?.label || "Buyer"}</strong>
               </span>
-              {!editingCap && (
-                <button
-                  onClick={() => {
-                    setNewCapInput(String(capHbar));
-                    setEditingCap(true);
-                    setCapError(null);
-                  }}
-                  className="flex items-center gap-1 text-[11px] text-[#4ade80] hover:text-[#22c55e] bg-white/5 hover:bg-white/10 px-2.5 py-1 rounded-md transition-colors"
-                >
-                  <PencilSquareIcon className="w-3.5 h-3.5" /> Increase / Adjust Cap
-                </button>
+              <span>•</span>
+              <span className="font-mono">{agent?.id}</span>
+              {agent?.accountId && (
+                <>
+                  <span>•</span>
+                  <a
+                    href={`https://hashscan.io/testnet/account/${agent.accountId}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-mono text-[#005fad] hover:underline inline-flex items-center gap-0.5"
+                  >
+                    {agent.accountId}
+                    <ArrowTopRightOnSquareIcon className="size-3" />
+                  </a>
+                </>
               )}
             </div>
           </div>
 
-          {/* Progress Bar */}
-          <div className="w-full bg-[#141414] h-3 rounded-full overflow-hidden border border-white/10">
-            <div
-              className={`h-full transition-all duration-500 rounded-full ${
-                percentUsed > 90 ? "bg-red-500" : percentUsed > 75 ? "bg-yellow-500" : "bg-[#4ade80]"
-              }`}
-              style={{ width: `${percentUsed}%` }}
-            />
-          </div>
-
-          {/* Spend Cap Adjustment Form (expandable) */}
-          {editingCap && (
-            <form
-              onSubmit={handleUpdateCap}
-              className="bg-[#111111] border border-white/10 rounded-xl p-4 flex flex-col gap-3 mt-1"
-            >
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div>
-                  <div className="text-xs font-semibold text-white">Adjust Spending Safety Cap</div>
-                  <div className="text-[11px] text-white/40">Select a preset addition or enter a custom HBAR limit</div>
-                </div>
-                {/* Quick Presets */}
-                <div className="flex items-center gap-1.5">
-                  {[5, 10, 25, 50].map(addAmount => {
-                    const target = (agent?.spendLimitHbar ?? 10) + addAmount;
-                    return (
-                      <button
-                        key={addAmount}
-                        type="button"
-                        onClick={() => setNewCapInput(String(target))}
-                        className="px-2.5 py-1 bg-white/5 hover:bg-white/10 text-[11px] text-white/80 rounded font-mono transition-colors"
-                      >
-                        +{addAmount} ℏ
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <div className="relative flex-1 max-w-xs">
-                  <input
-                    type="number"
-                    step="0.1"
-                    min="0.1"
-                    value={newCapInput}
-                    onChange={e => setNewCapInput(e.target.value)}
-                    placeholder="e.g. 25"
-                    className="w-full bg-[#181818] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-[#4ade80]"
-                    autoFocus
-                  />
-                  <span className="absolute right-3 top-1.5 text-xs text-white/40 font-mono">HBAR</span>
-                </div>
-                <button
-                  type="submit"
-                  disabled={savingCap || !newCapInput}
-                  className="px-3 py-1.5 bg-[#4ade80] hover:bg-[#22c55e] disabled:opacity-50 text-black font-semibold rounded-lg text-xs font-mono transition-colors"
-                >
-                  {savingCap ? "Saving…" : "Save New Cap"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEditingCap(false);
-                    setCapError(null);
-                  }}
-                  className="px-3 py-1.5 bg-white/5 hover:bg-white/10 text-white/60 hover:text-white rounded-lg text-xs font-mono transition-colors"
-                >
-                  Cancel
-                </button>
-              </div>
-
-              {capError && <div className="text-[11px] text-red-400 font-mono">{capError}</div>}
-            </form>
-          )}
-
-          {capSuccess && (
-            <div className="text-[11px] text-green-400 font-mono flex items-center gap-1.5 bg-green-500/10 border border-green-500/20 px-3 py-1.5 rounded-lg">
-              <CheckIcon className="w-3.5 h-3.5" /> {capSuccess}
-            </div>
-          )}
-
-          <div className="flex justify-between items-center text-[11px] text-white/40 font-mono">
-            <span>Enforced by smart contract vault policy</span>
-            <span>Limit: {capHbar} HBAR</span>
-          </div>
-        </div>
-
-        {/* High-Level Telemetry KPI Cards */}
-        <KpiRow>
-          <KpiTile
-            label="Total Spent"
-            value={`${spentHbar} ℏ`}
-            hint={`${agentActivity.length} API requests settled`}
-            icon={<BanknotesIcon className="w-4 h-4" />}
-          />
-          <KpiTile
-            label="Remaining Budget"
-            value={`${Math.max(0, capHbar - Number(spentHbar)).toFixed(4)} ℏ`}
-            hint="Available before cap limit"
-            icon={<ShieldCheckIcon className="w-4 h-4" />}
-          />
-          <KpiTile
-            label="System Active Agents"
-            value={stats?.activeAgents ?? 1}
-            hint={`Across ${stats?.totalAgents ?? 1} registered agents`}
-            icon={<BoltIcon className="w-4 h-4" />}
-          />
-        </KpiRow>
-
-        {/* 14-Day Spend Velocity Chart */}
-        <div className="bg-[#0c0c0c] border border-white/10 rounded-2xl p-6">
-          <div className="mb-4">
-            <h2 className="text-sm font-semibold text-white uppercase tracking-wider font-mono">
-              14-Day Spend Velocity
-            </h2>
-            <p className="text-xs text-white/40 mt-0.5">Aggregated micropayments settled over Hedera consensus</p>
-          </div>
-          <SpendChart data={stats?.chartData || []} height={180} />
-        </div>
-
-        {/* Agent Integration Snippet */}
-        <div className="bg-[#0c0c0c] border border-white/10 rounded-2xl p-6 flex flex-col gap-3">
-          <div className="flex justify-between items-center">
-            <div className="text-xs font-semibold text-white uppercase font-mono flex items-center gap-2">
-              <CodeBracketIcon className="w-4 h-4 text-[#60a5fa]" /> x402 Micropayment Invocation
-            </div>
+          <div className="flex items-center gap-2 self-start sm:self-auto">
             <button
-              onClick={async () => {
-                await navigator.clipboard.writeText(sampleRequestCmd);
-                setCopiedHeader(true);
-                setTimeout(() => setCopiedHeader(false), 2000);
-              }}
-              className="text-xs font-mono text-white/60 hover:text-white flex items-center gap-1.5 bg-white/5 hover:bg-white/10 px-2.5 py-1 rounded-md transition-colors"
+              onClick={handleManualRefresh}
+              disabled={refreshing}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-white hover:bg-[#eeeef1] border border-[#00000014] text-[#111114] transition-colors shadow-2xs cursor-pointer disabled:opacity-50"
             >
-              {copiedHeader ? (
-                <CheckIcon className="w-3.5 h-3.5 text-green-400" />
-              ) : (
-                <ClipboardDocumentIcon className="w-3.5 h-3.5" />
-              )}
-              {copiedHeader ? "Copied" : "Copy cURL"}
+              <ArrowPathIcon className={`size-3.5 ${refreshing ? "animate-spin text-[#005fad]" : "text-[#797981]"}`} />
+              <span>{refreshing ? "Syncing..." : "Refresh"}</span>
+            </button>
+            <button
+              onClick={handleSignOut}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-white hover:bg-[#eeeef1] border border-[#00000014] text-[#797981] hover:text-[#be222a] transition-colors shadow-2xs cursor-pointer"
+            >
+              Sign Out
             </button>
           </div>
-          <p className="text-xs text-white/40">
-            Agents settle payments natively by passing their registered ID and bearer credentials in HTTP headers:
-          </p>
-          <pre className="bg-[#111111] border border-white/10 rounded-xl p-3.5 text-xs font-mono text-white/80 overflow-x-auto">
-            {sampleRequestCmd}
-          </pre>
         </div>
 
-        {/* Real-Time Consensus Receipts Table */}
-        <div className="bg-[#0c0c0c] border border-white/10 rounded-2xl p-6 flex flex-col gap-4">
-          <div className="flex justify-between items-center border-b border-white/10 pb-4">
-            <div>
-              <h2 className="text-sm font-semibold text-white uppercase tracking-wider font-mono">
-                Consensus Settlement Receipts
-              </h2>
-              <p className="text-xs text-white/40 mt-0.5">
-                Every settlement is immutably sequenced via Hedera Consensus Service (HCS)
-              </p>
+        {/* Spend Cap Edit Inline Bar */}
+        {editingCap && (
+          <form
+            onSubmit={handleUpdateCap}
+            className="p-3 bg-white border border-[#00000014] rounded-lg shadow-xs flex flex-wrap items-center gap-3 animate-in fade-in"
+          >
+            <span className="text-xs font-medium text-[#111114]">New Spend Cap (HBAR):</span>
+            <input
+              type="number"
+              min="0.01"
+              step="any"
+              value={newCapInput}
+              onChange={e => setNewCapInput(e.target.value)}
+              className="px-2.5 py-1 text-xs font-mono border border-black/10 rounded-md w-32 outline-none focus:border-[#111114]"
+              autoFocus
+            />
+            <button
+              type="submit"
+              disabled={savingCap}
+              className="px-3 py-1 text-xs font-semibold bg-[#111114] text-white rounded-md hover:bg-black/90 disabled:opacity-50 cursor-pointer"
+            >
+              {savingCap ? "Saving..." : "Save Cap"}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setEditingCap(false);
+                setCapError(null);
+              }}
+              className="px-3 py-1 text-xs text-[#797981] hover:text-[#111114] cursor-pointer"
+            >
+              Cancel
+            </button>
+            {capError && <span className="text-xs text-[#be222a]">{capError}</span>}
+          </form>
+        )}
+
+        {capSuccess && (
+          <div className="p-2.5 bg-emerald-50 text-[#186a23] border border-emerald-200/80 rounded-lg text-xs font-medium">
+            {capSuccess}
+          </div>
+        )}
+
+        {/* Firecrawl-Style Segmented Stat Card Header Container */}
+        <div className="border border-[#00000014] bg-white rounded-lg shadow-xs overflow-hidden">
+          <div className="flex flex-wrap lg:flex-nowrap divide-y lg:divide-y-0 lg:divide-x divide-[#00000014]">
+            {/* Card 1: HBAR Balance */}
+            <div className="flex-1 min-w-[200px] px-5 py-4">
+              <div className="font-mono text-[11px] uppercase tracking-wider text-[#797981] mb-1">Account Balance</div>
+              <div className="text-2xl font-semibold tabular-nums text-[#111114]">
+                {balance.hbar} <span className="text-xs font-normal text-[#797981] font-sans">HBAR</span>
+              </div>
+              <div className="text-xs text-[#797981] mt-0.5 truncate font-mono">
+                {Number(balance.tinybar).toLocaleString()} tinybar
+              </div>
             </div>
-            <span className="text-xs font-mono text-white/40">{agentActivity.length} events</span>
+
+            {/* Card 2: Total Autonomous Spend */}
+            <div className="flex-1 min-w-[200px] px-5 py-4">
+              <div className="font-mono text-[11px] uppercase tracking-wider text-[#797981] mb-1">
+                Total Machine Spend
+              </div>
+              <div className="text-2xl font-semibold tabular-nums text-[#111114]">
+                {agent?.totalSpentTinybar
+                  ? (Number(agent.totalSpentTinybar) / 1e8).toFixed(4)
+                  : stats?.spend24hHbar || "0.0000"}{" "}
+                <span className="text-xs font-normal text-[#797981] font-sans">HBAR</span>
+              </div>
+              <div className="text-xs text-[#797981] mt-0.5 truncate">{spendEvents.length} recorded payments</div>
+            </div>
+
+            {/* Card 3: Spend Cap / Threshold */}
+            <div className="flex-1 min-w-[200px] px-5 py-4">
+              <div className="font-mono text-[11px] uppercase tracking-wider text-[#797981] mb-1 flex items-center justify-between">
+                <span>Spend Cap</span>
+                {agent && (
+                  <button
+                    onClick={() => {
+                      setEditingCap(!editingCap);
+                      setNewCapInput(String(agent.spendLimitHbar));
+                    }}
+                    className="text-[11px] text-[#005fad] hover:underline cursor-pointer lowercase font-sans font-medium"
+                  >
+                    {editingCap ? "close" : "edit"}
+                  </button>
+                )}
+              </div>
+              <div className="text-2xl font-semibold tabular-nums text-[#111114]">
+                {agent?.spendLimitHbar ?? 10} <span className="text-xs font-normal text-[#797981] font-sans">HBAR</span>
+              </div>
+              <div className="text-xs text-[#797981] mt-0.5 truncate">Max safe budget</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Spend Events Table matching SubscriptionsView.tsx */}
+        <div className="border border-[#00000014] bg-white rounded-lg shadow-xs overflow-hidden flex flex-col">
+          {/* Table Header */}
+          <div className="bg-[#f6f6f9] border-b border-[#00000014] px-5 py-3 text-[11px] font-semibold text-[#797981] uppercase tracking-wider flex items-center justify-between select-none shrink-0">
+            <div className="w-5/12 sm:w-1/2">Service</div>
+            <div className="w-4/12 sm:w-1/4">Cost (Tinybar / HBAR)</div>
+            <div className="w-3/12 sm:w-1/4 text-right pr-2">Status / Hash</div>
           </div>
 
-          {agentActivity.length === 0 ? (
-            <div className="py-12 text-center text-white/30 text-xs font-mono">
-              No transactions recorded yet for this agent. Once requests settle via x402, receipts will appear here in
-              real time.
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs font-mono">
-                <thead>
-                  <tr className="border-b border-white/10 text-white/40 uppercase text-[10px]">
-                    <th className="py-2.5 px-3">Timestamp</th>
-                    <th className="py-2.5 px-3">Resource</th>
-                    <th className="py-2.5 px-3">Amount</th>
-                    <th className="py-2.5 px-3">HCS Sequence</th>
-                    <th className="py-2.5 px-3 text-right">Receipt</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/5">
-                  {agentActivity.map((event: SpendEvent, idx: number) => (
-                    <tr key={idx} className="hover:bg-white/5 transition-colors">
-                      <td className="py-3 px-3 text-white/60 whitespace-nowrap">
-                        {new Date(event.timestamp).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          second: "2-digit",
-                        })}
-                      </td>
-                      <td className="py-3 px-3 text-white font-medium">{event.route}</td>
-                      <td className="py-3 px-3 text-[#4ade80] font-semibold whitespace-nowrap">
-                        {(Number(event.amountTinybar) / 1e8).toFixed(4)} ℏ
-                      </td>
-                      <td className="py-3 px-3 text-white/40">#{event.hcsSequenceNumber ?? "Pending"}</td>
-                      <td className="py-3 px-3 text-right whitespace-nowrap">
-                        {event.txId ? (
+          {/* Table Body */}
+          <div className="divide-y divide-[#00000014]">
+            {spendEvents.length === 0 ? (
+              <div className="p-16 text-center flex flex-col items-center justify-center gap-2 text-[#797981]">
+                <p className="font-semibold text-xs text-[#111114]">No transactions recorded</p>
+                <p className="text-[11px] text-[#797981] max-w-sm">
+                  Autonomous machine micropayments initiated by this agent will appear here in real time.
+                </p>
+              </div>
+            ) : (
+              spendEvents.map((ev, idx) => {
+                const dateStr = new Date(ev.timestamp).toLocaleString([], {
+                  month: "short",
+                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                });
+
+                return (
+                  <div
+                    key={ev.id || idx}
+                    className="flex items-center justify-between px-5 py-3.5 hover:bg-[#eeeef1]/40 transition-colors"
+                  >
+                    {/* Left: Route / Agent */}
+                    <div className="w-5/12 sm:w-1/2 min-w-0 pr-4">
+                      <div className="text-xs font-semibold text-[#111114] truncate font-mono">
+                        {ev.route || "Autonomous Micropayment"}
+                      </div>
+                      <div className="text-[11px] text-[#797981] truncate">
+                        By: <span className="font-medium text-[#111114]">{ev.agentLabel || ev.agentId}</span>
+                        {ev.hcsSequenceNumber && (
+                          <span className="font-mono ml-1.5">• HCS #{ev.hcsSequenceNumber}</span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Middle: Amount */}
+                    <div className="w-4/12 sm:w-1/4 min-w-0">
+                      <div className="text-sm font-semibold tabular-nums text-[#111114]">
+                        {ev.amountHbar || (Number(ev.amountTinybar) / 1e8).toFixed(4)}{" "}
+                        <span className="text-xs font-normal text-[#797981]">HBAR</span>
+                      </div>
+                      <div className="font-mono text-[11px] text-[#797981]">
+                        {Number(ev.amountTinybar).toLocaleString()} tb
+                      </div>
+                    </div>
+
+                    {/* Right: Status / Link */}
+                    <div className="w-3/12 sm:w-1/4 text-right pr-2">
+                      <div className="flex items-center justify-end gap-1.5">
+                        <span className="size-1.5 rounded-full bg-[#186a23]" />
+                        <span className="text-xs font-medium text-[#186a23]">Settled</span>
+                      </div>
+                      <div className="text-[11px] text-[#797981] mt-0.5">
+                        {ev.txId ? (
                           <a
-                            href={`https://hashscan.io/testnet/transaction/${event.txId}`}
+                            href={`https://hashscan.io/testnet/transaction/${ev.txId}`}
                             target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-[#60a5fa] hover:underline"
+                            rel="noreferrer"
+                            className="font-mono text-[#005fad] hover:underline inline-flex items-center gap-0.5"
                           >
-                            HashScan <ArrowTopRightOnSquareIcon className="w-3 h-3" />
+                            <span>{ev.txId.slice(0, 10)}...</span>
+                            <ArrowTopRightOnSquareIcon className="size-2.5" />
                           </a>
                         ) : (
-                          <span className="text-white/30">Local Receipt</span>
+                          <span>{dateStr}</span>
                         )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
-export default function HomePage() {
+export default function DashboardPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#050505] flex items-center justify-center text-white/50 font-mono text-sm">
-          Loading dashboard…
+        <div className="min-h-screen bg-[#fafafb] flex items-center justify-center text-xs font-mono text-[#797981]">
+          Loading...
         </div>
       }
     >

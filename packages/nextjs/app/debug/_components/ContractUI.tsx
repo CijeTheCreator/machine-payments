@@ -19,18 +19,14 @@ export const ContractUI = ({ contractName }: ContractUIProps) => {
   const { data: deployedContractData, isLoading: deployedContractLoading } = useDeployedContractInfo({ contractName });
 
   if (deployedContractLoading) {
-    return (
-      <div className="mt-14">
-        <span className="loading loading-spinner loading-lg"></span>
-      </div>
-    );
+    return <div className="p-8 text-center text-xs font-mono text-[#797981]">Loading contract details...</div>;
   }
 
   if (!deployedContractData) {
     return (
-      <p className="text-3xl mt-14">
-        No contract found by the name of {String(contractName)} on chain {targetNetwork.name}!
-      </p>
+      <div className="p-8 text-center text-xs font-mono text-[#797981] border border-dashed border-[#00000014] rounded-xl">
+        No contract found for &quot;{String(contractName)}&quot; on network {targetNetwork.name}.
+      </div>
     );
   }
 

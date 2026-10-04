@@ -12,9 +12,9 @@ export const metadata = getMetadata({
 
 const ScaffoldHbarApp = ({ children }: { children: React.ReactNode }) => {
   return (
-    <html suppressHydrationWarning>
+    <html suppressHydrationWarning data-theme="light">
       <body>
-        <ThemeProvider enableSystem>
+        <ThemeProvider forcedTheme="light" enableSystem={false}>
           <ScaffoldHbarAppWithProviders>{children}</ScaffoldHbarAppWithProviders>
         </ThemeProvider>
       </body>

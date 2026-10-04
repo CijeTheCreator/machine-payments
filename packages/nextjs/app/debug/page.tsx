@@ -4,24 +4,22 @@ import { getMetadata } from "~~/utils/scaffold-hbar/getMetadata";
 
 export const metadata = getMetadata({
   title: "Debug Contracts",
-  description: "Debug your deployed 🏗 Scaffold-HBAR contracts in an easy way",
+  description: "Debug your deployed Scaffold-HBAR contracts in an easy way",
 });
 
 const Debug: NextPage = () => {
   return (
-    <>
-      <DebugContracts />
-      <div className="text-center mt-8 bg-secondary p-10">
-        <h1 className="text-4xl my-0">Debug Contracts</h1>
-        <p className="text-neutral">
-          You can debug & interact with your deployed contracts here.
-          <br /> Check{" "}
-          <code className="italic bg-base-300 text-base font-bold [word-spacing:-0.5rem] px-1">
-            packages / nextjs / app / debug / page.tsx
-          </code>{" "}
-        </p>
+    <div className="flex-1 bg-[#fafafb] text-[#111114] select-none py-8 px-4 sm:px-6">
+      <div className="max-w-6xl mx-auto w-full space-y-6">
+        <div className="pb-4 border-b border-[#00000014]">
+          <h1 className="text-xl font-bold tracking-tight text-[#111114]">Contract Debug</h1>
+          <p className="text-xs text-[#5a5a61] mt-1">
+            Directly test, inspect, and interact with deployed Hedera smart contracts.
+          </p>
+        </div>
+        <DebugContracts />
       </div>
-    </>
+    </div>
   );
 };
 

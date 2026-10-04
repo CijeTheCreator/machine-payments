@@ -8,7 +8,7 @@ import { useTheme } from "next-themes";
 import { Toaster } from "react-hot-toast";
 import { hederaTestnet } from "viem/chains";
 import { WagmiProvider } from "wagmi";
-import { Header } from "~~/components/Header";
+import { DevSellerTools } from "~~/components/DevSellerTools";
 import { LocalChainErrorBanner } from "~~/components/LocalChainErrorBanner";
 import { BlockieAvatar } from "~~/components/scaffold-hbar";
 import { wagmiConfig } from "~~/services/web3/wagmiConfig";
@@ -16,10 +16,10 @@ import { wagmiConfig } from "~~/services/web3/wagmiConfig";
 const ScaffoldHbarApp = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
-      <div className="flex flex-col min-h-screen">
-        <Header />
+      <div className="flex flex-col min-h-screen bg-[#fafafb] text-[#111114]">
         <LocalChainErrorBanner />
         <main className="relative flex flex-col flex-1">{children}</main>
+        <DevSellerTools />
       </div>
       <Toaster />
     </>

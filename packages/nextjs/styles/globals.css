@@ -1,153 +1,159 @@
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap");
 @import "tailwindcss";
 
-/* Styrene A Web – Hedera brand font (fallback: Montserrat per brand.hedera.com) */
-@font-face {
-  font-family: "Styrene A Web";
-  src:
-    url("https://db.onlinewebfonts.com/t/819f612977ba7ba86c14b739b908c73f.woff2") format("woff2"),
-    url("https://db.onlinewebfonts.com/t/819f612977ba7ba86c14b739b908c73f.woff") format("woff");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
-
 @theme {
-  --shadow-center: 0 0 12px -2px rgb(0 0 0 / 0.05);
-  --animate-pulse-fast: pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  --font-sans: "Styrene A Web", "Montserrat", ui-sans-serif, system-ui, sans-serif;
-  --color-hedera-ultraviolet: #8259ef;
-  --color-hedera-azure: #0031ff;
-  --color-hedera-charcoal: #11151d;
-  --color-hedera-indigo: #00156e;
-  --color-hedera-cobalt: #2d84eb;
-  --color-hedera-violet: #4f46e5;
-  --color-hedera-smoke: #9b9b9d;
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  --color-background: #fafafb;
+  --color-foreground: #111114;
+
+  --color-console-primary: #161619;
+  --color-console-secondary: #323237;
+  --color-console-supporting: #47474d;
+  --color-console-meta: #5a5a61;
+  --color-console-decorative: #797981;
+
+  --color-console-border-subtle: rgba(0, 0, 0, 0.08);
+  --color-console-border-strong: rgba(0, 0, 0, 0.2);
+  --color-console-hover: rgba(0, 0, 0, 0.05);
+  --color-console-open: rgba(0, 0, 0, 0.07);
+
+  --color-surface-0: #e7e7ea;
+  --color-surface-1: #f6f6f9;
+  --color-surface-1-hover: #eeeef1;
+  --color-surface-2: #eeeef1;
+  --color-surface-3: #ffffff;
+
+  --color-sidebar: #f1f1f4;
+  --color-sidebar-foreground: #111114;
+  --color-sidebar-border: rgba(0, 0, 0, 0.08);
+  --color-sidebar-accent: rgba(0, 0, 0, 0.07);
+  --color-sidebar-accent-foreground: #111114;
+
+  --color-success: #186a23;
+  --color-sent: #005fad;
+  --color-warning: #8d5400;
+  --color-star: #916600;
+  --color-destructive: #be222a;
+  --color-border: rgba(0, 0, 0, 0.08);
 }
 
 @plugin "daisyui" {
-  themes:
-    light,
-    dark --prefersdark;
+  themes: light;
 }
 
 @plugin "daisyui/theme" {
   name: "light";
 
-  --color-primary: #4f46e5;
+  --color-primary: #111114;
   --color-primary-content: #ffffff;
-  --color-secondary: #8259ef;
-  --color-secondary-content: #ffffff;
-  --color-accent: #2d84eb;
+  --color-secondary: #f6f6f9;
+  --color-secondary-content: #111114;
+  --color-accent: #005fad;
   --color-accent-content: #ffffff;
-  --color-neutral: #11151d;
+  --color-neutral: #111114;
   --color-neutral-content: #ffffff;
   --color-base-100: #ffffff;
-  --color-base-200: #f7f7f8;
-  --color-base-300: #e8e8ec;
-  --color-base-content: #11151d;
-  --color-info: #2d84eb;
-  --color-success: #34eeb6;
-  --color-warning: #ffcf72;
-  --color-error: #ff8863;
+  --color-base-200: #fafafb;
+  --color-base-300: #eeeef1;
+  --color-base-content: #111114;
+  --color-info: #005fad;
+  --color-success: #186a23;
+  --color-warning: #8d5400;
+  --color-error: #be222a;
 
-  --radius-field: 9999rem;
-  --radius-box: 1rem;
-  --tt-tailw: 6px;
+  --radius-field: 0.5rem;
+  --radius-box: 0.5rem;
 }
 
-@plugin "daisyui/theme" {
-  name: "dark";
-
-  --color-primary: #8259ef;
-  --color-primary-content: #ffffff;
-  --color-secondary: #4f46e5;
-  --color-secondary-content: #ffffff;
-  --color-accent: #2d84eb;
-  --color-accent-content: #ffffff;
-  --color-neutral: #ffffff;
-  --color-neutral-content: #11151d;
-  --color-base-100: #181c27;
-  --color-base-200: #11151d;
-  --color-base-300: #0a0d14;
-  --color-base-content: #f0f0f2;
-  --color-info: #2d84eb;
-  --color-success: #34eeb6;
-  --color-warning: #ffcf72;
-  --color-error: #ff8863;
-
-  --radius-field: 9999rem;
-  --radius-box: 1rem;
-
-  --tt-tailw: 6px;
-  --tt-bg: var(--color-primary);
+:root {
+  --background: #fafafb;
+  --foreground: #111114;
+  --console-border-subtle: rgba(0, 0, 0, 0.08);
+  --console-border-strong: rgba(0, 0, 0, 0.2);
+  --surface-1: #f6f6f9;
+  --surface-2: #eeeef1;
+  --sidebar: #f1f1f4;
+  --border-faint: rgba(0, 0, 0, 0.08);
 }
 
-/*
-  The default border color has changed to `currentColor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
-*/
 @layer base {
   *,
   ::after,
   ::before,
   ::backdrop,
   ::file-selector-button {
-    border-color: var(--color-gray-200, currentColor);
-  }
-
-  p {
-    margin: 1rem 0;
+    border-color: rgba(0, 0, 0, 0.08);
   }
 
   body {
     min-height: 100vh;
-    font-family: "Styrene A Web", "Montserrat", ui-sans-serif, system-ui, sans-serif;
-  }
-
-  h1,
-  h2,
-  h3,
-  h4 {
-    margin-bottom: 0.5rem;
-    line-height: 1;
+    font-family: var(--font-sans);
+    background-color: #fafafb;
+    color: #111114;
+    overflow-x: hidden;
   }
 }
 
 :root,
 [data-theme] {
-  background: var(--color-base-200);
+  background: #fafafb;
+  color: #111114;
 }
 
-.btn {
-  @apply shadow-md;
+/* Override Scaffold-HBAR UI debug-contracts variables and dark themes */
+:root,
+:host,
+[data-theme],
+.dark,
+[data-theme="dark"] {
+  --color-sui-primary: #111114 !important;
+  --color-sui-primary-subtle: #f6f6f9 !important;
+  --color-sui-primary-neutral: #fafafb !important;
+  --color-sui-primary-content: #ffffff !important;
+  --color-sui-accent: #005fad !important;
+  --color-sui-base-content: #111114 !important;
+  --color-sui-base-100: #ffffff !important;
+  --color-sui-input-background: #ffffff !important;
+  --color-sui-input-border: rgba(0, 0, 0, 0.1) !important;
+  --color-sui-input-text: #111114 !important;
 }
 
-.btn.btn-ghost {
-  @apply shadow-none;
+.bg-sui-base-100 {
+  background-color: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.03) !important;
 }
 
-.link {
-  text-underline-offset: 2px;
+.bg-sui-primary-subtle {
+  background-color: #f6f6f9 !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
 }
 
-.link:hover {
-  opacity: 80%;
+.bg-sui-primary-neutral {
+  background-color: #fafafb !important;
 }
 
-.hedera-gradient {
-  background: linear-gradient(135deg, #8259ef 0%, #0031ff 100%);
+.text-sui-base-content {
+  color: #111114 !important;
 }
 
-.hedera-gradient-text {
-  background: linear-gradient(135deg, #8259ef 0%, #0031ff 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.border-sui-primary-subtle,
+.border-sui-primary-subtle\/70,
+.border-sui-primary-subtle\/80 {
+  border-color: rgba(0, 0, 0, 0.08) !important;
 }
+
+.btn-dc {
+  border-radius: 0.5rem !important;
+  background-color: #f6f6f9 !important;
+  color: #111114 !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+.btn-dc-primary {
+  background-color: #111114 !important;
+  color: #ffffff !important;
+}
+
