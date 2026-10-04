@@ -64,6 +64,14 @@
       {
         "key": "NEXT_PUBLIC_FACILITATOR_URL",
         "description": "Optional custom facilitator URL (defaults to https://api.testnet.blocky402.com)"
+      },
+      {
+        "key": "AGENT_REGISTRY_ADDRESS",
+        "description": "Optional deployed HSCS AgentRegistry contract address (0x...) for on-chain agent identity verification"
+      },
+      {
+        "key": "AGENT_TRUST_AUDIT_TOPIC_ID",
+        "description": "Optional HCS topic ID (0.0.X) for recording agent trust and identity verification audit logs"
       }
     ],
     "outro": {

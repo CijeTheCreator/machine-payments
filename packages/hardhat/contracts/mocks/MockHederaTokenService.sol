@@ -9,10 +9,7 @@ import { IHederaTokenService } from "../interfaces/IHederaTokenService.sol";
 contract MockHederaTokenService {
     int64 public customResponseCode;
 
-    event CryptoTransferCalled(
-        address indexed caller,
-        IHederaTokenService.AccountAmount[] transfers
-    );
+    event CryptoTransferCalled(address indexed caller, IHederaTokenService.AccountAmount[] transfers);
 
     function setResponseCode(int64 _code) external {
         customResponseCode = _code;

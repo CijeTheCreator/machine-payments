@@ -438,6 +438,463 @@ const deployedContracts = {
       inheritedFunctions: {},
       deployedOnBlock: 1,
     },
+    AgentRegistry: {
+      address: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+      abi: [
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "initialFee",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "nonpayable",
+          type: "constructor",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "agent",
+              type: "address",
+            },
+          ],
+          name: "AddressAlreadyRegistered",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "agent",
+              type: "address",
+            },
+          ],
+          name: "AgentNotFound",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "serviceEndpoint",
+              type: "string",
+            },
+          ],
+          name: "AgentNotFoundForEndpoint",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "agentId",
+              type: "uint256",
+            },
+          ],
+          name: "AgentNotFoundForId",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "did",
+              type: "string",
+            },
+          ],
+          name: "DIDAlreadyRegistered",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "EmptyString",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "sent",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "required",
+              type: "uint256",
+            },
+          ],
+          name: "InsufficientRegistrationFee",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "NotAgent",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "NotOwner",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "serviceEndpoint",
+              type: "string",
+            },
+          ],
+          name: "ServiceEndpointAlreadyRegistered",
+          type: "error",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "agent",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "agentId",
+              type: "uint256",
+            },
+          ],
+          name: "AgentDeactivated",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "agent",
+              type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "string",
+              name: "did",
+              type: "string",
+            },
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "agentId",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "string",
+              name: "serviceEndpoint",
+              type: "string",
+            },
+          ],
+          name: "AgentRegistered",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "newFee",
+              type: "uint256",
+            },
+          ],
+          name: "RegistrationFeeUpdated",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "agentId",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "string",
+              name: "newEndpoint",
+              type: "string",
+            },
+          ],
+          name: "ServiceEndpointUpdated",
+          type: "event",
+        },
+        {
+          inputs: [],
+          name: "deactivateAgent",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "agent",
+              type: "address",
+            },
+          ],
+          name: "getAgentByAddress",
+          outputs: [
+            {
+              internalType: "string",
+              name: "did",
+              type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "id",
+              type: "uint256",
+            },
+            {
+              internalType: "string",
+              name: "description",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "serviceEndpoint",
+              type: "string",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "agentId",
+              type: "uint256",
+            },
+          ],
+          name: "getAgentById",
+          outputs: [
+            {
+              internalType: "string",
+              name: "did",
+              type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "id",
+              type: "uint256",
+            },
+            {
+              internalType: "string",
+              name: "description",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "serviceEndpoint",
+              type: "string",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "serviceEndpoint",
+              type: "string",
+            },
+          ],
+          name: "getAgentByServiceEndpoint",
+          outputs: [
+            {
+              internalType: "string",
+              name: "did",
+              type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "id",
+              type: "uint256",
+            },
+            {
+              internalType: "string",
+              name: "description",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "serviceEndpointOut",
+              type: "string",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "agent",
+              type: "address",
+            },
+          ],
+          name: "getAgentDID",
+          outputs: [
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "agent",
+              type: "address",
+            },
+          ],
+          name: "getAgentServiceEndpoint",
+          outputs: [
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "agent",
+              type: "address",
+            },
+          ],
+          name: "isAgentRegistered",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "owner",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "did",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "description",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "serviceEndpoint",
+              type: "string",
+            },
+          ],
+          name: "registerAgent",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "agentId",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "payable",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "registrationFee",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "newFee",
+              type: "uint256",
+            },
+          ],
+          name: "setRegistrationFee",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "newEndpoint",
+              type: "string",
+            },
+          ],
+          name: "updateServiceEndpoint",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address payable",
+              name: "to",
+              type: "address",
+            },
+          ],
+          name: "withdrawFees",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+      ],
+      inheritedFunctions: {},
+      deployedOnBlock: 3,
+    },
   },
   31337: {
     Vault: {
@@ -871,6 +1328,463 @@ const deployedContracts = {
       ],
       inheritedFunctions: {},
       deployedOnBlock: 1,
+    },
+    AgentRegistry: {
+      address: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+      abi: [
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "initialFee",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "nonpayable",
+          type: "constructor",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "agent",
+              type: "address",
+            },
+          ],
+          name: "AddressAlreadyRegistered",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "agent",
+              type: "address",
+            },
+          ],
+          name: "AgentNotFound",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "serviceEndpoint",
+              type: "string",
+            },
+          ],
+          name: "AgentNotFoundForEndpoint",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "agentId",
+              type: "uint256",
+            },
+          ],
+          name: "AgentNotFoundForId",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "did",
+              type: "string",
+            },
+          ],
+          name: "DIDAlreadyRegistered",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "EmptyString",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "sent",
+              type: "uint256",
+            },
+            {
+              internalType: "uint256",
+              name: "required",
+              type: "uint256",
+            },
+          ],
+          name: "InsufficientRegistrationFee",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "NotAgent",
+          type: "error",
+        },
+        {
+          inputs: [],
+          name: "NotOwner",
+          type: "error",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "serviceEndpoint",
+              type: "string",
+            },
+          ],
+          name: "ServiceEndpointAlreadyRegistered",
+          type: "error",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "agent",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "agentId",
+              type: "uint256",
+            },
+          ],
+          name: "AgentDeactivated",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "agent",
+              type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "string",
+              name: "did",
+              type: "string",
+            },
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "agentId",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "string",
+              name: "serviceEndpoint",
+              type: "string",
+            },
+          ],
+          name: "AgentRegistered",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "newFee",
+              type: "uint256",
+            },
+          ],
+          name: "RegistrationFeeUpdated",
+          type: "event",
+        },
+        {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "uint256",
+              name: "agentId",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "string",
+              name: "newEndpoint",
+              type: "string",
+            },
+          ],
+          name: "ServiceEndpointUpdated",
+          type: "event",
+        },
+        {
+          inputs: [],
+          name: "deactivateAgent",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "agent",
+              type: "address",
+            },
+          ],
+          name: "getAgentByAddress",
+          outputs: [
+            {
+              internalType: "string",
+              name: "did",
+              type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "id",
+              type: "uint256",
+            },
+            {
+              internalType: "string",
+              name: "description",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "serviceEndpoint",
+              type: "string",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "agentId",
+              type: "uint256",
+            },
+          ],
+          name: "getAgentById",
+          outputs: [
+            {
+              internalType: "string",
+              name: "did",
+              type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "id",
+              type: "uint256",
+            },
+            {
+              internalType: "string",
+              name: "description",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "serviceEndpoint",
+              type: "string",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "serviceEndpoint",
+              type: "string",
+            },
+          ],
+          name: "getAgentByServiceEndpoint",
+          outputs: [
+            {
+              internalType: "string",
+              name: "did",
+              type: "string",
+            },
+            {
+              internalType: "uint256",
+              name: "id",
+              type: "uint256",
+            },
+            {
+              internalType: "string",
+              name: "description",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "serviceEndpointOut",
+              type: "string",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "agent",
+              type: "address",
+            },
+          ],
+          name: "getAgentDID",
+          outputs: [
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "agent",
+              type: "address",
+            },
+          ],
+          name: "getAgentServiceEndpoint",
+          outputs: [
+            {
+              internalType: "string",
+              name: "",
+              type: "string",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address",
+              name: "agent",
+              type: "address",
+            },
+          ],
+          name: "isAgentRegistered",
+          outputs: [
+            {
+              internalType: "bool",
+              name: "",
+              type: "bool",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "owner",
+          outputs: [
+            {
+              internalType: "address",
+              name: "",
+              type: "address",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "did",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "description",
+              type: "string",
+            },
+            {
+              internalType: "string",
+              name: "serviceEndpoint",
+              type: "string",
+            },
+          ],
+          name: "registerAgent",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "agentId",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "payable",
+          type: "function",
+        },
+        {
+          inputs: [],
+          name: "registrationFee",
+          outputs: [
+            {
+              internalType: "uint256",
+              name: "",
+              type: "uint256",
+            },
+          ],
+          stateMutability: "view",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "uint256",
+              name: "newFee",
+              type: "uint256",
+            },
+          ],
+          name: "setRegistrationFee",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "string",
+              name: "newEndpoint",
+              type: "string",
+            },
+          ],
+          name: "updateServiceEndpoint",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+        {
+          inputs: [
+            {
+              internalType: "address payable",
+              name: "to",
+              type: "address",
+            },
+          ],
+          name: "withdrawFees",
+          outputs: [],
+          stateMutability: "nonpayable",
+          type: "function",
+        },
+      ],
+      inheritedFunctions: {},
+      deployedOnBlock: 3,
     },
   },
 } as const;

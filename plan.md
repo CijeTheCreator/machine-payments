@@ -45,7 +45,8 @@ Any template submitted must pass every item in Hedera's automated Stage 1 evalua
     - `script:check-balance` (multi-account balance and allowance inspection)
 - [ ] **3b. Protected Route Code Scaffolder (`script:make-route`):**
   - CLI code generator inspired by `php artisan make` that scaffolds ready-to-run Next.js App Router x402-protected API endpoints.
-  - Automatically wires the Spend Guard engine, micro-settlement parameters (price in tinybars, HBAR `0.0.0`), and dual-flavor facilitator negotiation into new endpoints.
+  - Interactive CLI flags: support `--trust` flag to prompt developers on whether the generated endpoint requires verified agent identity or accepts any paying caller.
+  - Automatically wires the Spend Guard engine, micro-settlement parameters (price in tinybars, HBAR `0.0.0`), dual-flavor facilitator negotiation, and composable `withAgentTrust()` middleware into new endpoints.
 - [x] **4. Multi-Tier Agent Spending Controls & Non-Custodial Governance:**
   - Unified Configuration (`scaffold.config.yaml`): Root-level declarative YAML configuration specifying agent modes, budget caps (`perTaskHbar`, `perDayHbar`), allowlists, blocked tools, and HCS settings, with dynamic `.env.local` override support.
   - Native Zero-Bloat Guard Module (`packages/nextjs/services/guard`): First-class, drop-in spend guard with dual API surface:
@@ -88,5 +89,19 @@ Any template submitted must pass every item in Hedera's automated Stage 1 evalua
     | Facilitator Micro-Settlement | CryptoTransfer Tx ID | Machine payment execution via x402 / micropayments |
 
   - Automated verification script (`script:verify-testnet`) ensuring all linked entities resolve with HTTP 200 on public Hedera Mirror Nodes.
+- [x] **12. Trustless Agent Identity & Verification System (ERC-8004 + HAK v4 + HCS Audit):**
+  - **On-Chain Identity Registry (`packages/hardhat/contracts/AgentRegistry.sol`):**
+    - ERC-8004 compliant on-chain registry mapping agent addresses to verified DIDs, metadata descriptions, and HTTP service endpoints.
+    - Automated deployment (`deploy/01_deploy_registry.ts`) and offline unit test suite (`packages/hardhat/test/AgentRegistry.test.ts`).
+  - **Native Hedera Agent Kit v4 Plugin (`packages/nextjs/services/trust/plugin`):**
+    - Custom plugin conforming to `@hashgraph/hedera-agent-kit` v4 `Plugin` interface with `BaseTool` extensions.
+    - Tools for agent registration, DID validation, and cryptographic signature verification.
+  - **Composable Trust Middleware (`withAgentTrust()`):**
+    - High-performance Route Handler middleware validating incoming `X-Agent-DID`, cryptographic signatures, and timestamps against the on-chain registry before routing to protected payment handlers.
+  - **Spend Guard Integration (`TrustedAgentPolicy`):**
+    - Drops into existing Spend Guard pipeline to dynamically verify counterparty agent identities before micro-settlements execute.
+  - **Mirror Node Auditing:**
+    - Emits identity registration and authentication receipts to a dedicated HCS topic (`agent-trust-audit`) for public mirror node verification.
+
 
 

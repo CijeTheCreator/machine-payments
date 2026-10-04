@@ -7,6 +7,7 @@ export * from "./extract";
 export * from "./policies/counterparty-allowlist.policy";
 export * from "./policies/spend-limit.policy";
 export * from "./policies/approval-tier.policy";
+export * from "./policies/trusted-agent.policy";
 export * from "./hooks/spend-audit.hook";
 export * from "./spendGuard";
 export * from "./policyRegistry";
