@@ -107,60 +107,41 @@ When executed, `script:make-route`:
 ### Generated Route Code Example
 
 ```typescript
-import { NextRequest, NextResponse } from "next/navigation";
-import { getSpendGuard } from "~~/services/guard";
-import { facilitatorService } from "~~/services/facilitator";
+import { NextResponse } from "next/server";
+import { withAgentTrust } from "~~/services/trust";
+import { withX402 } from "~~/services/facilitator";
+import { withSpendGuard } from "~~/services/guard";
 
-const RESOURCE_PRICE_TINYBAR = 10_000_000n; // 0.1 HBAR
-
-export async function GET(req: NextRequest) {
-  const paymentHeader = req.headers.get("payment-signature");
-
-  // 1. If payment is missing, return standard HTTP 402 challenge
-  if (!paymentHeader) {
-    const facilitatorUrl = facilitatorService.getActiveFacilitatorUrl();
-    return new NextResponse(
-      JSON.stringify({ error: "Payment required to access AI Sentiment API" }),
-      {
-        status: 402,
-        headers: {
-          "PAYMENT-REQUIRED": JSON.stringify({
-            amount: RESOURCE_PRICE_TINYBAR.toString(),
-            unit: "tinybar",
-            asset: "0.0.0", // Native HBAR
-            network: "hedera:testnet",
-            recipient: process.env.HEDERA_OPERATOR_ID || "0.0.X",
-            facilitator: facilitatorUrl,
-          }),
-        },
-      }
-    );
-  }
-
-  // 2. Validate payment via Spend Guard & verify through Facilitator
-  const guard = getSpendGuard();
-  const verification = await facilitatorService.verifyPayment({
-    signedTx: paymentHeader,
-    expectedAmountTinybars: RESOURCE_PRICE_TINYBAR,
-  });
-
-  if (!verification.valid) {
-    return NextResponse.json({ error: "Payment verification failed" }, { status: 403 });
-  }
-
-  // 3. Settle payment on Hedera testnet
-  await facilitatorService.settlePayment(verification);
-
-  // 4. Return protected resource payload
+// Protected resource payload handler
+const sentimentHandler = async (_req: Request, { agent, payment, guard }: any) => {
   return NextResponse.json({
     status: "success",
     data: {
       sentiment: "bullish",
       confidence: 0.98,
       timestamp: new Date().toISOString(),
+      agentCaller: agent?.did,
+      settlementReceipt: payment?.settlement,
     },
   });
-}
+};
+
+// Composed middleware pipeline: Identity -> x402 Payment -> Spend Guard Policy
+export const GET = withAgentTrust(
+  withX402(
+    withSpendGuard(sentimentHandler, {
+      maxPriceHbar: 5,
+      recordAudit: true,
+    }),
+    {
+      priceHbar: 0.1, // 10_000_000 tinybars
+      memo: "x402-sentiment-api-access",
+    }
+  ),
+  { requireRegistered: true }
+);
+
+export const POST = GET;
 ```
 
 ---

@@ -137,8 +137,10 @@ export async function settlePaymentTransaction(request: FacilitatorSettleRequest
   }
 
   const { feePayer } = getActiveFacilitatorConfig();
-  const operatorKey = process.env.FACILITATOR_OPERATOR_KEY || process.env.AGENT_PRIVATE_KEY;
-  const operatorId = process.env.FACILITATOR_OPERATOR_ID || process.env.AGENT_ACCOUNT_ID;
+  const operatorKey =
+    process.env.FACILITATOR_OPERATOR_KEY || process.env.HEDERA_PRIVATE_KEY || process.env.AGENT_PRIVATE_KEY;
+  const operatorId =
+    process.env.FACILITATOR_OPERATOR_ID || process.env.HEDERA_ACCOUNT_ID || process.env.AGENT_ACCOUNT_ID;
 
   // Handle mock or offline testing mode
   if (request.transactionBytes.startsWith("mock-tx-") || !operatorKey || !operatorId) {
@@ -156,11 +158,11 @@ export async function settlePaymentTransaction(request: FacilitatorSettleRequest
     const tx = Transaction.fromBytes(txBytes);
 
     const client = Client.forTestnet();
-    const privKey = PrivateKey.fromStringECDSA
-      ? operatorKey.startsWith("0x")
+    const privKey = operatorKey.startsWith("30")
+      ? PrivateKey.fromStringDer(operatorKey)
+      : operatorKey.startsWith("0x")
         ? PrivateKey.fromStringECDSA(operatorKey)
-        : PrivateKey.fromString(operatorKey)
-      : PrivateKey.fromString(operatorKey);
+        : PrivateKey.fromString(operatorKey);
 
     client.setOperator(AccountId.fromString(operatorId), privKey);
 

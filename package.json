@@ -42,9 +42,11 @@
     "script:create-topic": "tsx scripts/createTopic.ts",
     "script:fund-agent": "tsx scripts/fundAgent.ts",
     "script:publish-policy": "tsx scripts/publishPolicy.ts",
-    "test": "yarn test:smoke && yarn test:guard && yarn test:policy && yarn test:facilitator && yarn test:trust && yarn hardhat:test",
+    "script:test-live-payment": "tsx scripts/testLivePayment.ts",
+    "test": "yarn test:smoke && yarn test:guard && yarn test:policy && yarn test:facilitator && yarn test:trust && yarn test:middleware && yarn hardhat:test",
     "test:facilitator": "tsx test/facilitator.test.ts",
     "test:guard": "tsx test/spendGuard.test.ts",
+    "test:middleware": "tsx test/middleware.test.ts",
     "test:policy": "tsx test/policyRegistry.test.ts",
     "test:smoke": "tsx test/faucetClient.smoke.test.ts",
     "test:trust": "tsx test/trust.test.ts"

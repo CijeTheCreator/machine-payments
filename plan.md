@@ -45,8 +45,11 @@ Any template submitted must pass every item in Hedera's automated Stage 1 evalua
     - `script:check-balance` (multi-account balance and allowance inspection)
 - [ ] **3b. Protected Route Code Scaffolder (`script:make-route`):**
   - CLI code generator inspired by `php artisan make` that scaffolds ready-to-run Next.js App Router x402-protected API endpoints.
-  - Interactive CLI flags: support `--trust` flag to prompt developers on whether the generated endpoint requires verified agent identity or accepts any paying caller.
-  - Automatically wires the Spend Guard engine, micro-settlement parameters (price in tinybars, HBAR `0.0.0`), dual-flavor facilitator negotiation, and composable `withAgentTrust()` middleware into new endpoints.
+  - Strict CLI-flag-only interface (non-interactive): `npm run script:make-route -- --name <endpointName> [--path <customPath>] [--price <hbar>] [--trust] [--guard]`.
+  - Path defaults directly to `/api/${name}` if `--path` is omitted.
+  - Sensible defaults for all parameters except `--name` so generation never fails due to missing optional flags (defaults to 1 HBAR, asset `0.0.0`, network `hedera:testnet`, no trust/guard unless flagged).
+  - Wires composable middleware stack: `withAgentTrust` (identity) -> `withX402` (payment challenge, verification & settlement) -> `withSpendGuard` (inbound policy enforcement & HCS audit, plus outbound `context.guard` injection).
+  - Aligns with Open Wallet Standard (OWS) unified PolicyEngine interface for shared inbound/outbound policy evaluation and HCS audit logging.
 - [x] **4. Multi-Tier Agent Spending Controls & Non-Custodial Governance:**
   - Unified Configuration (`scaffold.config.yaml`): Root-level declarative YAML configuration specifying agent modes, budget caps (`perTaskHbar`, `perDayHbar`), allowlists, blocked tools, and HCS settings, with dynamic `.env.local` override support.
   - Native Zero-Bloat Guard Module (`packages/nextjs/services/guard`): First-class, drop-in spend guard with dual API surface:

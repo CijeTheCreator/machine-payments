@@ -12,3 +12,4 @@ export * from "./hooks/spend-audit.hook";
 export * from "./spendGuard";
 export * from "./policyRegistry";
 export * from "./verification";
+export * from "./middleware";
