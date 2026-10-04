@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   outputFileTracingRoot: path.join(__dirname, "../.."),
   reactStrictMode: true,
   devIndicators: false,
+  transpilePackages: ["@scaffold-hbar-ui/components", "@scaffold-hbar-ui/debug-contracts", "@scaffold-hbar-ui/hooks"],
   typescript: {
     ignoreBuildErrors: process.env.NEXT_PUBLIC_IGNORE_BUILD_ERROR === "true",
   },

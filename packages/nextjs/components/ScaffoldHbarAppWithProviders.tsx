@@ -8,7 +8,6 @@ import { useTheme } from "next-themes";
 import { Toaster } from "react-hot-toast";
 import { hederaTestnet } from "viem/chains";
 import { WagmiProvider } from "wagmi";
-import { Footer } from "~~/components/Footer";
 import { Header } from "~~/components/Header";
 import { LocalChainErrorBanner } from "~~/components/LocalChainErrorBanner";
 import { BlockieAvatar } from "~~/components/scaffold-hbar";
@@ -21,7 +20,6 @@ const ScaffoldHbarApp = ({ children }: { children: React.ReactNode }) => {
         <Header />
         <LocalChainErrorBanner />
         <main className="relative flex flex-col flex-1">{children}</main>
-        <Footer />
       </div>
       <Toaster />
     </>

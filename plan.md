@@ -66,16 +66,23 @@ Any template submitted must pass every item in Hedera's automated Stage 1 evalua
 - [x] **6. HCS-2 Versioned Policy Registry & Mirror Node Verification (`/verify`):**
   - HCS-2 indexed registry topic (`hcs-2:0:<ttl>`) with owner-only submit key for immutable, consensus-timestamped policy versioning.
   - Independent `/verify` Next.js route that reads Mirror Node REST APIs to audit policy history and verify payment receipts against active limits.
-- [ ] **7. Native Hedera Wallet & Scaffold-HBAR UI Components:**
-  - HashPack and Blade wallet connection via Hedera WalletConnect (HIP-820) operating natively with Hedera Account IDs (`0.0.X`) and zero EVM/Wagmi bundle bloat.
-  - Integration of official `@scaffold-hbar-ui/components` (`<Address />`, `<Balance />`, `<HbarInput />`, `<HederaAddressInput />`) and `@scaffold-hbar-ui/hooks` (`useHederaAccountId`, `useHederaEvmAddress`, `useAddress`) providing live USD/HBAR pricing and dual `0.0.X` / `0x...` Mirror Node resolution.
+- [x] **7. Dedicated Agent Onboarding Page (`/` / `/onboard`) & OWS Keystore Integration:**
+  - First page a developer or seller lands on after repository setup (`yarn next:dev`).
+  - Merchant creates agent claim codes with custom labels and optional spend caps.
+  - Generates one-time claim codes and copyable HTTP / REST + OWS instructions (`POST /api/agents/claim` with OWS public key/DID from `openwallet.sh`).
+  - 5-stage live progress stepper: `waiting` (code minted) -> `claimed` (agent traded code for API key) -> `wallet` (registered with seller) -> `awaiting_funding` -> `active` (verified on Hedera Testnet Mirror Node).
+  - Self-service agent / operator portal login to view agent status without requiring browser extension wallets.
 - [ ] **8. Interactive Contract Debugger (`/debug` via `@scaffold-hbar-ui/debug-contracts`):**
   - Dedicated `/debug` route rendering dynamic forms for all read/write methods on deployed contracts (`Vault`).
   - Integer inputs with native Hedera decimal multiplier buttons (`×1e8` for tinybar to HBAR and `×1e18` for wei to ETH).
   - Real-time contract state inspection and event log monitoring.
-- [ ] **9. Interactive Dashboard (Inspired by Hedera Agent Lab):**
-  - Next.js dashboard visualizer displaying real-time agent spending streams, budget ceiling meters, and live HCS consensus audit receipts.
-  - Dual-mode execution toggle: Autonomous Mode vs. Human-in-the-Loop (HITL) approval modal.
+- [x] **9. Minimal Seller & Agent Spend Dashboard (`/dashboard` - Inspired by Cardily):**
+  - Sleek, refined dark-mode dashboard tailored for sellers and agent operators.
+  - Top KPI Row: 24h Spend (HBAR / USD), 7d Spend, Active Agents count, API Requests count.
+  - Daily Spend Chart: 7d/14d spend visualization bucketed by day.
+  - Agent Fleet Table: Agent label, DID/Wallet address, Status pill, Spend to date, and Testnet Balance (polled from Hedera Mirror Node).
+  - Recent x402 Settlements & Consensus Receipts: Timestamp, Counterparty Agent, Route called, Amount tinybar/HBAR, and public HashScan testnet links.
+  - Pluggable storage architecture: Zero-dependency file-backed JSON store (`JsonAgentStore`) with swappable SQLite / external DB adapter interface.
 - [x] **10. Interactive Documentation Hub (`docs/getting-started.md` & Architecture Guide):**
   - Comprehensive documentation article styled after Hedera docs rendering quickstarts, environment setup guides, architecture overviews, and interactive API definitions.
   - Reference documentation covering native Hedera HIP integrations, CLI scripts, feature #3b (`script:make-route`) spec, and policy configuration.

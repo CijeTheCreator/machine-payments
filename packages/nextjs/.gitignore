@@ -35,3 +35,7 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+
+# local runtime data & databases (Gate 8 enforcement)
+data/
+*.db

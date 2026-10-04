@@ -37,3 +37,7 @@ deployments/hardhat/
 # IDE
 .vscode/
 .idea/
+
+# local runtime data & databases (Gate 8 enforcement)
+data/
+*.db

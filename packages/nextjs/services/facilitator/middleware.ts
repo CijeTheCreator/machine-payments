@@ -1,3 +1,4 @@
+import { getAgentStore } from "../agents";
 import {
   buildX402PaymentRequirement,
   getActiveFacilitatorConfig,
@@ -184,6 +185,31 @@ export function withX402(handler: X402Handler, options?: X402MiddlewareOptions) 
         ...context,
         payment: paymentInfo,
       };
+
+      try {
+        const store = getAgentStore();
+        const payer = verification.payerAccountId || "unknown";
+        const agentHeader = req.headers.get("x-agent-id") || req.headers.get("x-agent-did");
+        let matchedAgent = agentHeader ? await store.getAgent(agentHeader) : null;
+        if (!matchedAgent && payer !== "unknown") {
+          const allAgents = await store.listAgents();
+          matchedAgent =
+            allAgents.find(a => a.accountId === payer || a.walletAddress?.toLowerCase() === payer.toLowerCase()) ??
+            null;
+        }
+
+        await store.recordSpend({
+          agentId: matchedAgent ? matchedAgent.id : payer,
+          agentLabel: matchedAgent ? matchedAgent.label : payer !== "unknown" ? payer : "External Agent",
+          route: new URL(req.url).pathname,
+          amountTinybar: requiredAmountTinybar,
+          amountHbar: (Number(requiredAmountTinybar) / 1e8).toFixed(4),
+          txId: settlement.transactionId || null,
+          hcsSequenceNumber: null,
+        });
+      } catch {
+        // Metric recording is defensive and non-blocking
+      }
 
       // Invoke inner handler
       const response = await handler(req, enrichedContext);
