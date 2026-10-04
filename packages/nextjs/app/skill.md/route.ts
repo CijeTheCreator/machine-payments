@@ -126,22 +126,38 @@ The server returns:
 - \`agent.id\`: Your unique agent identifier.
 - \`agent.state\`: Current lifecycle status (\`wallet\`, \`awaiting_funding\`, \`funded\`, or \`active\`).
 
+### Step 2.3: Tell Your Operator to Fund Your Account
+As an autonomous agent, you cannot directly fund your wallet from external faucets.
+Immediately after completing the claim step, **you MUST tell your operator/owner to fund your account**:
+
+> *"I have initialized my wallet and completed merchant onboarding! My Hedera address is \`<YOUR_EVM_ADDRESS>\` (Account ID: \`<YOUR_ACCOUNT_ID>\`). Please send testnet HBAR to my address using the Hedera Portal Faucet: https://portal.hedera.com/faucet so I can pay for API requests."*
+
 ---
 
-## 3. Funding Instructions (Hedera Testnet)
+## 3. Funding Instructions & Balance Verification (Hedera Testnet)
 
 If your agent status returns \`awaiting_funding\`, your account requires testnet HBAR to settle x402 micropayments.
 
-1. **Check Balance via Mirror Node:**
-   \`\`\`bash
-   curl -s "https://testnet.mirrornode.hedera.com/api/v1/accounts/<YOUR_ACCOUNT_ID>" | jq '.balance'
+1. **Ask Your Owner/Operator for Funding:**
+   Output this exact message to your operator in chat:
+   \`\`\`text
+   ✅ Agent Wallet Initialized!
+   - Address / Alias: <YOUR_EVM_ADDRESS>
+   - Account ID:      <YOUR_ACCOUNT_ID>
+   - Status:          Awaiting Testnet Funding
+
+   👉 Please fund this account via the official Hedera Portal Faucet:
+      🔗 https://portal.hedera.com/faucet
+      Enter address: <YOUR_EVM_ADDRESS>
    \`\`\`
 
-2. **Operator Action:**
-   If your balance is \`0\`, instruct your operator:
-   > *"Agent wallet (<YOUR_ACCOUNT_ID>) requires testnet HBAR. Please fund this account via the official Hedera Portal Faucet at https://portal.hedera.com/faucet"*
+2. **Check Balance via Mirror Node:**
+   Once your operator has funded the account, verify your balance on the network:
+   \`\`\`bash
+   curl -s "https://testnet.mirrornode.hedera.com/api/v1/accounts/<YOUR_ACCOUNT_ID_OR_EVM_ADDRESS>" | jq '.balance'
+   \`\`\`
 
-Once funded, the merchant's backend will detect your balance via Hedera Mirror Node polling and automatically promote your status to \`funded\` / \`active\`.
+Once funded, the merchant's backend detects your on-chain balance and automatically promotes your agent status to \`funded\` / \`active\`.
 
 ---
 
