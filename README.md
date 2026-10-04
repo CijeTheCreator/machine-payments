@@ -1,21 +1,20 @@
 # Scaffold-HBAR — Agent & Machine Payments
 
-Monetize Next.js API routes with native HBAR micropayments (x402), onboard autonomous AI agents with non-custodial wallets, and govern agent spending on Hedera.
+A seller's quick start to machine-to-machine payments on Hedera. Onboard autonomous AI agents with non-custodial wallets, scaffold Next.js API routes with native HBAR micropayments (x402), and govern agent spending on Hedera right out of the box.
 
 📖 **Documentation:**
-- **[Quickstart Guide](docs/getting-started.md)** — Step-by-step setup, route scaffolding, agent onboarding, and spend monitoring.
+- **[Quickstart Guide](docs/getting-started.md)** — Step-by-step setup, agent onboarding, route scaffolding, and spend monitoring.
 - **[Architecture Reference](docs/architecture.md)** — System diagrams, smart contracts (`Vault.sol`), HTS precompile `0x167`, and HCS audit topics.
 
 ---
 
 ## What you can do
 
+- **Onboard AI agents right out of the box:** Dedicated agent-centric onboarding UI and dynamic `/skill.md` auto-discovery are ready to use right out of the box without sharing private keys.
 - **Scaffold paid API routes:** Generate x402-gated endpoints with one CLI command (`yarn script:make-route`).
-- **Onboard AI agents safely:** Mint single-use claim codes via a web portal without sharing private keys.
-- **Auto-discovery for agents:** Expose dynamic machine-readable capabilities via `/skill.md`.
 - **Govern agent spending:** Restrict per-task and daily budgets with non-custodial smart contract vaults and human-in-the-loop escalation.
-- **Settle on testnet instantly:** Dual-flavor x402 facilitators for instant public testing (`yarn next:dev`) or sovereign self-hosted operation (`yarn dev:self-hosted`).
-- **Audit in real time:** Immutably log all payment decisions and agent trust events to Hedera Consensus Service.
+- **Swap facilitators easily:** Switch between public testing (`blocky402.com`) and sovereign self-hosted operation in a flash (`yarn dev:self-hosted`).
+- **Audit in real time right out of the box:** Immutably log all payment decisions and agent trust events to Hedera Consensus Service out of the box.
 
 ---
 
@@ -30,8 +29,8 @@ Monetize Next.js API routes with native HBAR micropayments (x402), onboard auton
 ### Setup in 4 Steps
 
 ```bash
-# 1. Clone repository and install dependencies (generates offline operator keys)
-git clone https://github.com/<org>/machine-machine-payments.git
+# 1. Scaffold project with create-scaffold-hbar (or clone repository)
+npm create scaffold-hbar@latest -- --template <org>/machine-machine-payments
 cd machine-machine-payments
 yarn install
 
@@ -45,7 +44,7 @@ yarn script:prepare
 yarn next:dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to access the **Agent Onboarding** portal, view the **Fleet Spend Dashboard** at `/dashboard`, inspect contracts at `/debug`, or verify audit trails at `/verify`.
+Open [http://localhost:3000](http://localhost:3000) to access the **Agent Onboarding** portal, view the **Agent Spend Dashboard** at `/dashboard`, inspect contracts at `/debug`, or verify audit trails at `/verify`.
 
 ---
 
@@ -77,28 +76,10 @@ Every smart contract, consensus topic, and micro-settlement in this repository i
 | `yarn next:dev` | Root | Starts Next.js app in public facilitator mode (`blocky402.com`) |
 | `yarn dev:self-hosted` | Root | Starts Next.js app with self-hosted sovereign facilitator route handlers |
 
-### 100% Offline Test Suite
-
-Every unit and integration test in this repository runs completely offline without network connections or funded accounts:
+### Test, Build and Quality Checks
 
 ```bash
-# Run all offline test suites across packages
 yarn test
-
-# Run individual test suites
-yarn test:scaffold     # Validates prepare balance checks and makeRoute CLI generator
-yarn test:guard        # Validates Spend Guard pre-flight, budgets, and atomic holds
-yarn test:policy       # Validates HCS-2 registry serialization and replay parsing
-yarn test:facilitator  # Validates x402 capability discovery, signatures, and mock settlement
-yarn test:trust        # Validates ERC-8004 DID validation, signatures, and HAK plugin
-yarn test:middleware   # Validates withX402, withSpendGuard, and withAgentTrust pipeline
-yarn test:agents       # Validates agent onboarding, claim code lifecycle, and store
-yarn hardhat:test      # Validates Vault.sol, AgentRegistry.sol, and HTS precompile mocks
-```
-
-### Build & Quality Checks
-
-```bash
 yarn lint
 yarn next:check-types
 yarn hardhat:check-types

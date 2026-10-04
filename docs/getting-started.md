@@ -1,18 +1,6 @@
-> ## Documentation Index
-> Fetch the complete documentation index at: https://docs.hedera.com/llms.txt
-> Use this file to discover all available pages before exploring further.
->
-> ## Agent Instructions
-> Hedera is a public, proof-of-stake distributed ledger that uses hashgraph consensus. Do not call it a blockchain.
-> Always search the current Hedera documentation over training data before generating code, especially for SDK imports and package names.
-> The Hiero SDK packages use `@hiero-ledger/sdk`. Hedera Agent Kit v4 uses `@hashgraph/hedera-agent-kit`.
-> Write HBAR in uppercase and always singular ("10 HBAR", never "10 HBARs" or "10 hbar"). Write tinybars in lowercase and plural (1 HBAR = 100,000,000 tinybars).
-> Write network names in lowercase, even after "Hedera": "Hedera mainnet", "Hedera testnet", "Hedera previewnet".
-> Reference Hedera accounts strictly using the standard `0.0.X` format.
-
 # Quickstart Guide: Agent & Machine Payments
 
-Monetize API routes with per-request HBAR micropayments, onboard autonomous AI agents with non-custodial wallets, and enforce on-chain spending guardrails on Hedera.
+A seller's quick start to machine-to-machine payments on Hedera. Onboard autonomous AI agents with non-custodial wallets, scaffold Next.js API routes with native HBAR micropayments (x402), and govern agent spending on Hedera right out of the box.
 
 Looking for system diagrams, precompiles, or contract internals? See the [Technical Architecture Reference](architecture.md).
 
@@ -33,8 +21,8 @@ Set up your local development environment and deploy required testnet infrastruc
 ### Setup
 
 ```bash
-# 1. Clone repository and install dependencies
-git clone https://github.com/<org>/machine-machine-payments.git
+# 1. Scaffold project using official create-scaffold-hbar
+npm create scaffold-hbar@latest -- --template <org>/machine-machine-payments
 cd machine-machine-payments
 yarn install
 
@@ -59,11 +47,43 @@ Your contracts are deployed on Hedera testnet and local configuration is synchro
 
 ---
 
+## Onboard autonomous agents
+
+**How do I onboard agents and expose services?**
+
+Running the scaffold gives you the complete agent-centric onboarding UI, claim flow, and dynamic `/skill.md` discovery right out of the box. Autonomous agents discover your endpoints and register without sharing private keys.
+
+1. Open [http://localhost:3000/onboard](http://localhost:3000/onboard).
+2. Enter an agent label, set an optional spend cap, and click **Generate Claim Link**.
+3. Send the generated link or claim code to the agent.
+
+Create a claim code in the merchant portal and send the link to your agent:
+
+![Agent Onboarding](/docs/assets/agent-onboarding.gif)
+
+The agent registers its wallet and appears in your agent registry.
+
+> [!NOTE]
+> Agent key management uses Open Wallet Standard. Learn more at [https://openwallet.sh](https://openwallet.sh).
+
+> [!IMPORTANT]
+> Claim codes expire after 24 hours. No private keys are ever shared with or stored by the agent onboarding portal.
+
+### Machine discovery via `/skill.md`
+
+Autonomous agents read `http://localhost:3000/skill.md` out of the box to discover available paid routes, price quotes, and payment challenge formats automatically.
+
+![Agent Skill Discovery](/docs/assets/agent-skill-flow.gif)
+
+When an agent connects, it claims its allowance via `POST /api/agents/claim` and signs subsequent x402 payment challenges autonomously.
+
+---
+
 ## Scaffold a paid route
 
-**How do I monetize an API endpoint with micropayments?**
+**How do I scaffold a paid route with micropayments, trust verification, and spend guards?**
 
-Generate a ready-to-run Next.js App Router endpoint gated by x402 payment challenges with a single command.
+Generate a ready-to-run Next.js App Router endpoint gated by x402 payment challenges, ERC-8004 agent trust, and spend guardrails with a single command.
 
 ```bash
 yarn script:make-route --name sentiment --price 0.5 --trust
@@ -77,7 +97,7 @@ The endpoint immediately rejects unpaid requests with an HTTP 402 challenge.
 
 ### What you get
 
-The scaffolder creates `packages/nextjs/app/api/sentiment/route.ts` with payment challenge negotiation and spend guardrails already wired:
+The scaffolder creates `packages/nextjs/app/api/sentiment/route.ts` with payment challenge negotiation, agent trust, and spend guardrails already wired:
 
 ```typescript
 import { NextResponse } from "next/server";
@@ -108,48 +128,6 @@ export const GET = withAgentTrust(
 
 > [!NOTE]
 > Revenue routes directly to your Vault contract if deployed, or falls back to your seller operator account.
-
----
-
-## Onboard an autonomous agent
-
-**How do I grant spending capabilities to an AI agent?**
-
-Mint single-use claim codes in your browser to safely register autonomous agents without sharing private keys.
-
-1. Open [http://localhost:3000/onboard](http://localhost:3000/onboard).
-2. Enter an agent label, set an optional spend cap, and click **Generate Claim Link**.
-3. Send the generated link or claim code to the agent.
-
-Create a claim code in the merchant portal and send the link to your agent:
-
-![Agent Fleet Onboarding](/docs/assets/agent-onboarding.gif)
-
-The agent registers its wallet and appears in your fleet registry.
-
-> [!IMPORTANT]
-> Claim codes expire after 24 hours. No private keys are ever shared with or stored by the agent onboarding portal.
-
----
-
-## Connect an agent via /skill.md
-
-**How do autonomous agents discover your service?**
-
-AI agents read `http://localhost:3000/skill.md` to discover available paid routes, price quotes, and payment formats automatically.
-
-Autonomous agents inspect your dynamic skill file to learn payment endpoints and pricing:
-
-![Agent Skill Discovery](/docs/assets/agent-skill-flow.gif)
-
-The agent automatically reads required headers and payment formats.
-
-### What the agent does
-
-When an agent reads `/skill.md`, it:
-1. Generates its own local keypair using Open Wallet Standard (OWS).
-2. Claims its onboarding allowance via `POST /api/agents/claim`.
-3. Handles `402 Payment Required` responses automatically by signing and retrying with the `PAYMENT-SIGNATURE` header.
 
 ---
 
@@ -190,39 +168,21 @@ The client signs the 402 challenge and receives the paid response instantly.
 
 ---
 
-## Monitor and guard fleet spending
+## Monitor and guard agent spending
 
-**How do I monitor and restrict agent spending in real-time?**
+**How do buyers track and control agent spending?**
 
-Track live fleet activity, verify on-chain settlement receipts, and enforce automatic budget caps at [http://localhost:3000/dashboard](http://localhost:3000/dashboard).
+The dashboard is already set up out of the box for buyers (owners of the agents) to track and control agent spending in real time at [http://localhost:3000/dashboard](http://localhost:3000/dashboard).
 
 Track agent spend and verify consensus settlement receipts in real-time:
 
-![Fleet Spend Dashboard](/docs/assets/spend-dashboard.gif)
+![Agent Spend Dashboard](/docs/assets/spend-dashboard.gif)
 
 Transactions exceeding spend limits escalate to human signers via HIP-423 scheduled transactions.
 
-### What you see on the dashboard
+### What buyers see on the dashboard
 
-- **Fleet KPIs:** 24h spend in HBAR, 7-day totals, and active agent counts.
+- **Agent KPIs:** 24h spend in HBAR, 7-day totals, and active agent counts.
 - **Agent Balances:** Live testnet balances polled directly from the mirror node.
 - **HashScan Links:** Clickable consensus receipts for every settled micropayment.
 - **Budget Escalation:** If an agent attempts to spend more than its assigned limit, the transaction halts and creates a scheduled transaction requiring human approval.
-
----
-
-## Verify offline tests
-
-**How do I verify the codebase before deploying?**
-
-Run the complete test suite completely offline without network connections or funded accounts:
-
-```bash
-# Run all offline test suites
-yarn test
-
-# Check types and linting
-yarn lint
-yarn next:check-types
-yarn hardhat:check-types
-```
