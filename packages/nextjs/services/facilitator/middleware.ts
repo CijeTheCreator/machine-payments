@@ -57,7 +57,13 @@ export function withX402(handler: X402Handler, options?: X402MiddlewareOptions) 
       requiredAmountTinybar = "100000000";
     }
 
-    const payTo = options?.payTo || process.env.AGENT_ACCOUNT_ID || "0.0.56789";
+    const payTo =
+      options?.payTo && options.payTo !== "0.0.X"
+        ? options.payTo
+        : process.env.NEXT_PUBLIC_VAULT_ADDRESS ||
+          process.env.VAULT_CONTRACT_ID ||
+          process.env.AGENT_ACCOUNT_ID ||
+          "0.0.56789";
     const asset = options?.asset || "0.0.0";
     const network = options?.network || "hedera:testnet";
     const memo = options?.memo || "x402-resource-access";

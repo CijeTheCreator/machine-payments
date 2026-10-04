@@ -49,6 +49,21 @@ Open [http://localhost:3000](http://localhost:3000) to access the **Agent Onboar
 
 ---
 
+## Testnet Proof
+
+Every smart contract, consensus topic, and micro-settlement in this repository is deployed and verified on Hedera Testnet:
+
+| Artifact | Target Testnet Entity | HashScan Link | What It Proves |
+| --- | --- | --- | --- |
+| `Vault` Contract | `0.0.10857484`<br>`0xDF555B1adED35fA4cAd6F65182848a0eA8d6766E` | [View on HashScan](https://hashscan.io/testnet/contract/0.0.10857484) | Autonomous spend controls with HTS precompile `0x167` disbursements; over-cap payments revert in consensus |
+| `AgentRegistry` Contract | `0.0.10857486`<br>`0x676ABBdD0D53cFBFC1d222E1208Ea9684593E735` | [View on HashScan](https://hashscan.io/testnet/contract/0.0.10857486) | ERC-8004 trustless agent identity registry linking agent addresses to verified DIDs |
+| HCS-2 Policy Registry | Topic `0.0.10857494` | [View on HashScan](https://hashscan.io/testnet/topic/0.0.10857494) | Immutable, owner-only versioned policy history and agent spend caps |
+| HCS Spend Audit Topic | Topic `0.0.10857493` | [View on HashScan](https://hashscan.io/testnet/topic/0.0.10857493) | Consensus audit trail recording real-time `ALLOW`, `BLOCK`, and `ESCALATE` payment decisions |
+| HCS Agent Trust Topic | Topic `0.0.10857496` | [View on HashScan](https://hashscan.io/testnet/topic/0.0.10857496) | Tamper-proof audit log for agent identity registrations and DID authentication receipts |
+| Scaffolder Payment (`/api/weather`) | Tx `0.0.6493119@1791134122.243336991` | [View on HashScan](https://hashscan.io/testnet/transaction/0.0.6493119-1791134122-243336991) | Live end-to-end machine x402 payment settlement (1 HBAR) to `Vault` with HCS audit receipt |
+
+---
+
 ## Developer Commands
 
 ### Core Workflows

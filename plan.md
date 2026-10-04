@@ -86,7 +86,7 @@ Any template submitted must pass every item in Hedera's automated Stage 1 evalua
 - [x] **10. Interactive Documentation Hub (`docs/getting-started.md` & Architecture Guide):**
   - Comprehensive documentation article styled after Hedera docs rendering quickstarts, environment setup guides, architecture overviews, and interactive API definitions.
   - Reference documentation covering native Hedera HIP integrations, CLI scripts, feature #3b (`script:make-route`) spec, and policy configuration.
-- [ ] **11. Proven on Testnet Artifact Verification (Mechanical Gate 7):**
+- [x] **11. Proven on Testnet Artifact Verification (Mechanical Gate 7):**
   - Staging and live execution of verifiable testnet proof table in `README.md` and `/verify`:
 
     | Artifact | Target Testnet Entity | What It Proves |

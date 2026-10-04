@@ -17,7 +17,7 @@ import {
 } from "./types";
 import { executeVaultPayment } from "./vault";
 import { RejectToolPolicy } from "@hashgraph/hedera-agent-kit/policies";
-import { Client, Hbar, TransferTransaction } from "@hiero-ledger/sdk";
+import { AccountId, Client, Hbar, PrivateKey, TransferTransaction } from "@hiero-ledger/sdk";
 
 export interface CreateSpendGuardOptions extends Partial<SpendGuardConfig> {
   client?: Client;
@@ -70,7 +70,24 @@ export class SpendGuard {
 
     this.store = options?.store || getDefaultSpendStore();
 
-    this.client = options?.client;
+    if (options?.client) {
+      this.client = options.client;
+    } else if (process.env.HEDERA_ACCOUNT_ID && process.env.HEDERA_PRIVATE_KEY) {
+      try {
+        const c = Client.forTestnet();
+        const priv = process.env.HEDERA_PRIVATE_KEY.startsWith("30")
+          ? PrivateKey.fromStringDer(process.env.HEDERA_PRIVATE_KEY)
+          : process.env.HEDERA_PRIVATE_KEY.startsWith("0x")
+            ? PrivateKey.fromStringECDSA(process.env.HEDERA_PRIVATE_KEY)
+            : PrivateKey.fromString(process.env.HEDERA_PRIVATE_KEY);
+        c.setOperator(AccountId.fromString(process.env.HEDERA_ACCOUNT_ID), priv);
+        this.client = c;
+      } catch {
+        this.client = undefined;
+      }
+    } else {
+      this.client = undefined;
+    }
   }
 
   /**

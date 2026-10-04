@@ -8,17 +8,23 @@ import {
   TransactionId,
   Hbar,
 } from "@hiero-ledger/sdk";
-import { GET as resourceRouteGet } from "../packages/nextjs/app/api/x402/resource/route";
 
-// Load environment variables from .env.local
+// Load environment variables from .env.local before importing route handlers
 dotenv.config({ path: path.resolve(__dirname, "../.env.local") });
 
 const HEDERA_ACCOUNT_ID = process.env.HEDERA_ACCOUNT_ID || "0.0.6493119";
 const HEDERA_PRIVATE_KEY = process.env.HEDERA_PRIVATE_KEY!;
 
 async function main() {
+  const targetRoute = process.argv.includes("--resource") ? "resource" : "weather";
+  const { GET: routeHandler } =
+    targetRoute === "resource"
+      ? await import("../packages/nextjs/app/api/x402/resource/route")
+      : await import("../packages/nextjs/app/api/weather/route");
+  const endpointUrl = `https://machine.local/api/${targetRoute}`;
+
   console.log("\n=======================================================");
-  console.log(" 🌐 Hedera Testnet Live End-to-End x402 Payment Test  ");
+  console.log(` 🌐 Hedera Testnet Live End-to-End x402 Payment Test (/api/${targetRoute})  `);
   console.log("=======================================================\n");
 
   if (!HEDERA_ACCOUNT_ID || !HEDERA_PRIVATE_KEY) {
@@ -45,13 +51,13 @@ async function main() {
   console.log(`   Current Balance: ${balanceHbar} HBAR (${balanceTinybar} tinybars)`);
   console.log("   ✅ Hedera Client connected successfully.\n");
 
-  // 2. Issue Unpaid Request to /api/x402/resource route
-  console.log("2. Sending Unpaid Request to /api/x402/resource endpoint...");
-  const unpaidReq = new Request("https://machine.local/api/x402/resource", {
+  // 2. Issue Unpaid Request to endpoint
+  console.log(`2. Sending Unpaid Request to ${endpointUrl} endpoint...`);
+  const unpaidReq = new Request(endpointUrl, {
     method: "GET",
   });
 
-  const unpaidRes = await resourceRouteGet(unpaidReq as any);
+  const unpaidRes = await routeHandler(unpaidReq as any);
   console.log(`   Response Status: HTTP ${unpaidRes.status} ${unpaidRes.statusText}`);
   assertCondition(unpaidRes.status === 402, `Expected HTTP 402 but got ${unpaidRes.status}`);
 
@@ -89,15 +95,15 @@ async function main() {
   console.log("   ✅ TransferTransaction signed by buyer.\n");
 
   // 4. Submit Paid Request with payment-signature Header
-  console.log("4. Submitting Paid Request with payment-signature to route...");
-  const paidReq = new Request("https://machine.local/api/x402/resource", {
+  console.log(`4. Submitting Paid Request with payment-signature to ${endpointUrl}...`);
+  const paidReq = new Request(endpointUrl, {
     method: "GET",
     headers: {
       "payment-signature": txBytesBase64,
     },
   });
 
-  const paidRes = await resourceRouteGet(paidReq as any);
+  const paidRes = await routeHandler(paidReq as any);
   console.log(`   Response Status: HTTP ${paidRes.status} ${paidRes.statusText}`);
   assertCondition(paidRes.status === 200, `Expected HTTP 200 but got ${paidRes.status}`);
 

@@ -100,7 +100,14 @@ export async function verifyPaymentTransaction(request: FacilitatorVerifyRequest
       const expectedPayTo = request.paymentDemand.payTo;
       const expectedAmount = Number(request.paymentDemand.amount);
 
-      const recipientTransfer = transferList.find(t => t.accountId === expectedPayTo);
+      const recipientTransfer = transferList.find(t => {
+        if (t.accountId.toLowerCase() === expectedPayTo.toLowerCase()) return true;
+        try {
+          return AccountId.fromString(t.accountId).toString() === AccountId.fromString(expectedPayTo).toString();
+        } catch {
+          return false;
+        }
+      });
       if (!recipientTransfer || recipientTransfer.amountTinybar < expectedAmount) {
         return {
           valid: false,
