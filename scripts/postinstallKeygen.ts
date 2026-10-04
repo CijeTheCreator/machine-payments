@@ -4,6 +4,7 @@ import { PrivateKey } from "@hiero-ledger/sdk";
 import { parse, stringify } from "envfile";
 
 const ROOT_ENV_PATH = path.resolve(__dirname, "../.env.local");
+const ROOT_DOTENV_PATH = path.resolve(__dirname, "../.env");
 const NEXTJS_ENV_PATH = path.resolve(__dirname, "../packages/nextjs/.env.local");
 
 export interface GeneratedKeys {
@@ -27,7 +28,7 @@ export function generateLocalKeys(): GeneratedKeys {
 }
 
 export function writeLocalEnv(keys: GeneratedKeys, accountId: string = "0.0.X"): void {
-  const envTargets = [ROOT_ENV_PATH, NEXTJS_ENV_PATH];
+  const envTargets = [ROOT_ENV_PATH, ROOT_DOTENV_PATH, NEXTJS_ENV_PATH];
 
   for (const envPath of envTargets) {
     let currentConfig: Record<string, string> = {};
@@ -61,15 +62,40 @@ export function writeLocalEnv(keys: GeneratedKeys, accountId: string = "0.0.X"):
 }
 
 export function runPostinstall(): void {
-  // If .env.local already exists with a private key, don't overwrite
-  if (fs.existsSync(ROOT_ENV_PATH)) {
-    try {
-      const content = parse(fs.readFileSync(ROOT_ENV_PATH, "utf-8")) as Record<string, string>;
-      if (content["AGENT_PRIVATE_KEY"] && content["AGENT_PRIVATE_KEY"].trim() !== "") {
-        return; // Already configured
+  // Check if .env.local or .env already has configured credentials
+  for (const candidatePath of [ROOT_ENV_PATH, ROOT_DOTENV_PATH]) {
+    if (fs.existsSync(candidatePath)) {
+      try {
+        const content = parse(fs.readFileSync(candidatePath, "utf-8")) as Record<string, string>;
+        if (content["AGENT_PRIVATE_KEY"] && content["AGENT_PRIVATE_KEY"].trim() !== "") {
+          const privKey = content["AGENT_PRIVATE_KEY"].trim();
+          let evm = content["AGENT_EVM_ADDRESS"] || content["NEXT_PUBLIC_AGENT_ADDRESS"] || "";
+          if (!evm) {
+            try {
+              const pk = privKey.startsWith("30")
+                ? PrivateKey.fromStringDer(privKey)
+                : PrivateKey.fromStringECDSA(privKey.replace(/^0x/, ""));
+              evm = "0x" + pk.publicKey.toEvmAddress();
+            } catch {
+              evm = "Unknown";
+            }
+          }
+          const accountId = content["AGENT_ACCOUNT_ID"] || content["HEDERA_ACCOUNT_ID"] || "0.0.X";
+          console.log("\n" + "=".repeat(76));
+          console.log("  🔑 Scaffold-HBAR: Testnet Credentials Configured (.env / .env.local)");
+          console.log("=".repeat(76));
+          console.log(`  EVM Address (Alias): ${evm}`);
+          console.log(`  Hedera Account ID:   ${accountId}`);
+          console.log(`  Private Key:         ${privKey}`);
+          console.log("\n  Fund your account with testnet HBAR from the Hedera Portal Faucet:");
+          console.log("  🔗 https://portal.hedera.com/faucet");
+          console.log(`  Enter your address: ${evm}`);
+          console.log("=".repeat(76) + "\n");
+          return;
+        }
+      } catch {
+        // Fallback to generating
       }
-    } catch {
-      // Continue to generate
     }
   }
 
@@ -77,15 +103,15 @@ export function runPostinstall(): void {
   writeLocalEnv(keys, "0.0.X");
 
   console.log("\n" + "=".repeat(76));
-  console.log("  🔑 Scaffold-HBAR: Testnet Credentials Initialized (.env.local)");
+  console.log("  🔑 Scaffold-HBAR: Testnet Credentials Initialized (.env / .env.local)");
   console.log("=".repeat(76));
   console.log(`  EVM Address (Alias): ${keys.evmAddress}`);
   console.log(`  Private Key (DER):   ${keys.privateKey}`);
   console.log("\n  Before running 'yarn script:prepare', please fund your account:");
-  console.log("  Option 1: Request testnet HBAR from the Hedera Portal Faucet:");
+  console.log("  Option 1: Request testnet HBAR from the official Hedera Portal Faucet:");
   console.log("            🔗 https://portal.hedera.com/faucet");
   console.log(`            Enter your address: ${keys.evmAddress}`);
-  console.log("  Option 2: Replace AGENT_ACCOUNT_ID and AGENT_PRIVATE_KEY in .env.local");
+  console.log("  Option 2: Replace AGENT_ACCOUNT_ID and AGENT_PRIVATE_KEY in .env / .env.local");
   console.log("            with your existing credentials from https://portal.hedera.com");
   console.log("=".repeat(76) + "\n");
 }

@@ -6,6 +6,7 @@ import { parse, stringify } from "envfile";
 import { generateLocalKeys, writeLocalEnv } from "./postinstallKeygen";
 
 export const ROOT_ENV_PATH = path.resolve(__dirname, "../.env.local");
+export const ROOT_DOTENV_PATH = path.resolve(__dirname, "../.env");
 export const NEXTJS_ENV_PATH = path.resolve(__dirname, "../packages/nextjs/.env.local");
 
 export interface AccountCheckResult {
@@ -17,18 +18,21 @@ export interface AccountCheckResult {
 
 export function loadEnvConfig(): Record<string, string> {
   let config: Record<string, string> = {};
-  if (fs.existsSync(ROOT_ENV_PATH)) {
-    try {
-      config = parse(fs.readFileSync(ROOT_ENV_PATH, "utf-8")) as Record<string, string>;
-    } catch {
-      config = {};
+  for (const envPath of [ROOT_DOTENV_PATH, ROOT_ENV_PATH]) {
+    if (fs.existsSync(envPath)) {
+      try {
+        const parsed = parse(fs.readFileSync(envPath, "utf-8")) as Record<string, string>;
+        config = { ...config, ...parsed };
+      } catch {
+        // ignore
+      }
     }
   }
   return config;
 }
 
 export function updateEnvVariables(updates: Record<string, string>): void {
-  const envTargets = [ROOT_ENV_PATH, NEXTJS_ENV_PATH];
+  const envTargets = [ROOT_ENV_PATH, ROOT_DOTENV_PATH, NEXTJS_ENV_PATH];
 
   for (const envPath of envTargets) {
     let currentConfig: Record<string, string> = {};
@@ -143,7 +147,7 @@ export function getDeployedContractAddress(contractName: string, network = "hede
   return null;
 }
 
-export function printFundingPrompt(target: string, evmAddress?: string): void {
+export function printFundingPrompt(target: string, evmAddress?: string, privateKey?: string): void {
   console.log("\n" + "=".repeat(78));
   console.log("  ⚠️  Hedera Account Not Yet Funded on Testnet");
   console.log("=".repeat(78));
@@ -151,12 +155,15 @@ export function printFundingPrompt(target: string, evmAddress?: string): void {
   if (evmAddress && evmAddress !== target) {
     console.log(`  EVM Address Alias:      ${evmAddress}`);
   }
+  if (privateKey) {
+    console.log(`  Private Key (DER):      ${privateKey}`);
+  }
   console.log("  Current Balance:        0 HBAR\n");
   console.log("  Before deploying your Vault and HCS topics, please fund this account:");
   console.log("  Option 1: Request testnet HBAR from the official Hedera Portal Faucet:");
   console.log("            🔗 https://portal.hedera.com/faucet");
   console.log(`            Enter your address: ${evmAddress || target}`);
-  console.log("  Option 2: Replace AGENT_ACCOUNT_ID and AGENT_PRIVATE_KEY in .env.local");
+  console.log("  Option 2: Replace AGENT_ACCOUNT_ID and AGENT_PRIVATE_KEY in .env / .env.local");
   console.log("            with your funded account credentials from https://portal.hedera.com");
   console.log("\n  Once funded, re-run:");
   console.log("    yarn script:prepare");
@@ -189,12 +196,14 @@ export async function main() {
 
   // Step 1: Ensure credentials exist
   if (!privateKeyStr) {
-    console.log("No agent credentials found in .env.local. Generating local keypair...");
+    console.log("No agent credentials found in .env / .env.local. Generating local keypair...");
     const keys = generateLocalKeys();
     writeLocalEnv(keys, "0.0.X");
     privateKeyStr = keys.privateKey;
     evmAddressStr = keys.evmAddress;
     envConfig = loadEnvConfig();
+    console.log(`  🔑 Auto-generated EVM Address: ${keys.evmAddress}`);
+    console.log(`  🔑 Auto-generated Private Key: ${keys.privateKey}\n`);
   }
 
   // Step 2: Check balance on Hedera Testnet Mirror Node
@@ -210,7 +219,7 @@ export async function main() {
   const checkResult = await checkAccountBalance(lookupTarget, network);
 
   if (!checkResult.exists || checkResult.balanceHbar <= 0) {
-    printFundingPrompt(lookupTarget, evmAddressStr);
+    printFundingPrompt(lookupTarget, evmAddressStr, privateKeyStr);
     return;
   }
 
