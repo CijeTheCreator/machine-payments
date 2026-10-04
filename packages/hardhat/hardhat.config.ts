@@ -1,5 +1,8 @@
+import * as path from "path";
 import * as dotenv from "dotenv";
 dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, "../../.env.local") });
+dotenv.config({ path: path.resolve(__dirname, ".env.local") });
 
 import { HardhatUserConfig, task } from "hardhat/config";
 import "@nomicfoundation/hardhat-ethers";
@@ -21,9 +24,28 @@ import generateTsAbis from "./scripts/generateTsAbis";
 // Hedera JSON-RPC URL (testnet default). Set HEDERA_RPC_URL in .env for mainnet.
 const hederaRpcUrl = process.env.HEDERA_RPC_URL || "https://testnet.hashio.io/api";
 
-// Deployer key: run `yarn account:generate` or `yarn account:import`, or set __RUNTIME_DEPLOYER_PRIVATE_KEY at runtime.
-const deployerPrivateKey =
-  process.env.__RUNTIME_DEPLOYER_PRIVATE_KEY ?? "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
+function resolveDeployerPrivateKey(): string {
+  if (process.env.__RUNTIME_DEPLOYER_PRIVATE_KEY) {
+    return process.env.__RUNTIME_DEPLOYER_PRIVATE_KEY;
+  }
+  const candidate = process.env.AGENT_PRIVATE_KEY || process.env.HEDERA_OPERATOR_PRIVATE_KEY;
+  if (candidate) {
+    if (candidate.startsWith("0x") && candidate.length === 66) {
+      return candidate;
+    }
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { PrivateKey } = require("@hiero-ledger/sdk");
+      const parsed = PrivateKey.fromString(candidate);
+      return "0x" + parsed.toStringRaw();
+    } catch {
+      // fallback
+    }
+  }
+  return "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
+}
+
+const deployerPrivateKey = resolveDeployerPrivateKey();
 
 const config: HardhatUserConfig = {
   solidity: {

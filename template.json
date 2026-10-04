@@ -30,10 +30,6 @@
         "description": "Hedera private key for autonomous AI agent"
       },
       {
-        "key": "FAUCET_URL",
-        "description": "Optional endpoint for hosted zero-config testnet micro-faucet"
-      },
-      {
         "key": "GUARD_MODE",
         "description": "Optional spending guard mode: auto, offchain, or vault (default: auto)"
       },
@@ -80,23 +76,23 @@
           "title": "Quick Start",
           "steps": [
             {
-              "label": "Install dependencies",
+              "label": "Install dependencies (auto-generates offline keys if missing)",
               "command": "yarn install"
             },
             {
-              "label": "Auto-provision agent testnet account",
-              "command": "yarn script:fund-agent"
+              "label": "Run 100% offline unit tests",
+              "command": "yarn test"
             },
             {
-              "label": "Run offline unit tests",
-              "command": "yarn hardhat:test"
+              "label": "Prepare Vault contract and HCS Audit Topics on Hedera Testnet",
+              "command": "yarn script:prepare"
             },
             {
-              "label": "Deploy Vault contract to Hedera Testnet",
-              "command": "yarn hardhat:deploy --network hederaTestnet"
+              "label": "Scaffold an x402-monetized API route",
+              "command": "yarn script:make-route --name my-service --price 1"
             },
             {
-              "label": "Start Next.js dashboard",
+              "label": "Start Next.js development server",
               "command": "yarn next:dev"
             }
           ]

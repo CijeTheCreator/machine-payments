@@ -31,25 +31,23 @@ Any template submitted must pass every item in Hedera's automated Stage 1 evalua
   - Monorepo `packages/hardhat` workspace containing `Vault.sol`, deployment scripts (`deploy/00_deploy_vault.ts`), and unit tests.
   - Automatic compilation pipeline generating ABIs and deployed addresses to `packages/nextjs/contracts/deployedContracts.ts` for full TypeScript autocomplete.
   - Configured Hashio JSON-RPC endpoints with testnet deployment (`yarn hardhat:deploy --network hederaTestnet`) and HashScan contract verification (`yarn hardhat:verify:testnet`).
-- [x] **2. Hosted Zero-Config Testnet Micro-Faucet & CLI Auto-Provisioning:**
-  - Dedicated external serverless micro-dispenser API hosting a funded testnet treasury outside the repository to strictly protect Mechanical Gate 8 (Zero Committed Secrets).
-  - Single-command CLI onboarding (`npm run script:fund-agent`): generates a fresh Hedera ED25519/ECDSA keypair, requests initial testnet HBAR from the dispenser, and writes `.env.local` automatically.
-  - Zero UI footprint: dispenser interaction is strictly developer/CLI-driven to preserve clean production dApp aesthetics and prevent public treasury draining.
-- [ ] **3. Quick Developer Scripts & Vault Auto-Deployment (`scripts/`):**
-  - Single-command CLI utilities in `package.json`:
-    - `script:create-agent` & `script:fund-agent` (account provisioning)
-    - `script:auto-deploy-vault` & `script:deploy-vault` (automatic on-chain HSCS `Vault` deployment with HTS precompile wiring and `.env.local` address sync)
-    - `script:create-topic` & `script:publish-policy` (HCS audit & HCS-2 registry)
-    - `script:grant-allowance` (HIP-336 non-custodial allowance & instant kill switch)
-    - `script:propose-scheduled` & `script:sign-schedule` (HIP-423 scheduled transaction workflow)
-    - `script:check-balance` (multi-account balance and allowance inspection)
-- [ ] **3b. Protected Route Code Scaffolder (`script:make-route`):**
-  - CLI code generator inspired by `php artisan make` that scaffolds ready-to-run Next.js App Router x402-protected API endpoints.
-  - Strict CLI-flag-only interface (non-interactive): `npm run script:make-route -- --name <endpointName> [--path <customPath>] [--price <hbar>] [--trust] [--guard]`.
-  - Path defaults directly to `/api/${name}` if `--path` is omitted.
-  - Sensible defaults for all parameters except `--name` so generation never fails due to missing optional flags (defaults to 1 HBAR, asset `0.0.0`, network `hedera:testnet`, no trust/guard unless flagged).
-  - Wires composable middleware stack: `withAgentTrust` (identity) -> `withX402` (payment challenge, verification & settlement) -> `withSpendGuard` (inbound policy enforcement & HCS audit, plus outbound `context.guard` injection).
-  - Aligns with Open Wallet Standard (OWS) unified PolicyEngine interface for shared inbound/outbound policy evaluation and HCS audit logging.
+- [x] **2. Offline Key Provisioning & Zero-Secrets Onboarding:**
+  - Automated offline ECDSA keypair generator executing during `postinstall` (`scripts/postinstallKeygen.ts`) to initialize credentials in `.env.local` without committing secrets (Gate 8).
+  - Clean developer onboarding flow directing merchants to fund their generated EVM alias via official Hedera Portal Faucet (`https://portal.hedera.com/faucet`) or input existing portal keys.
+  - Zero external faucet serverless dependencies, ensuring 100% repository sovereignty and gate compliance.
+- [x] **3. Unified Infrastructure Preparation Script (`script:prepare`):**
+  - Single-command merchant infrastructure deployer (`scripts/prepare.ts`):
+    - Verifies testnet account balance via public Mirror Node; if unfunded, cleanly prints the faucet portal link and halts gracefully without uncaught exceptions.
+    - Compiles and deploys `Vault.sol` (Consensus Spend Controls) and `AgentRegistry.sol` (ERC-8004 Identity Registry) to Hedera Testnet via Hardhat with deployed ABIs exported to Next.js.
+    - Creates the 3 essential HCS topics: Spend Audit (`HCS_AUDIT_TOPIC_ID`), Policy Registry (`HCS_POLICY_TOPIC_ID`), and Trust Audit (`AGENT_TRUST_AUDIT_TOPIC_ID`).
+    - Automatically updates `.env.local` and `packages/nextjs/.env.local` with contract addresses and topic IDs.
+- [x] **3b. Protected Route Code Scaffolder (`script:make-route`):**
+  - CLI code generator inspired by `php artisan make` that scaffolds ready-to-run Next.js App Router x402-protected API endpoints (`scripts/makeRoute.ts`).
+  - Strict CLI-flag interface: `yarn script:make-route --name <endpointName> [--price <hbar>] [--path <customPath>] [--no-guard] [--trust] [--force]`.
+  - Automatically calculates tinybar pricing ($1\text{ HBAR} = 10^8\text{ tinybar}$), defaults to 1 HBAR, and routes revenue directly to on-chain `Vault` if deployed or seller account.
+  - Injects composable middleware pipeline: `withAgentTrust` (identity) -> `withX402` (payment challenge & settlement) -> `withSpendGuard` (inbound policy enforcement & HCS audit).
+  - Inserts a clear `// TODO` block inside the generated route handler guiding the merchant where to put their monetizeable service logic.
+  - Comprehensive 100% offline test suite (`test/prepareAndScaffold.test.ts`).
 - [x] **4. Multi-Tier Agent Spending Controls & Non-Custodial Governance:**
   - Unified Configuration (`scaffold.config.yaml`): Root-level declarative YAML configuration specifying agent modes, budget caps (`perTaskHbar`, `perDayHbar`), allowlists, blocked tools, and HCS settings, with dynamic `.env.local` override support.
   - Native Zero-Bloat Guard Module (`packages/nextjs/services/guard`): First-class, drop-in spend guard with dual API surface:

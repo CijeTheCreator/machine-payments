@@ -6,8 +6,9 @@ const deployVault: DeployFunction = async function (hre: HardhatRuntimeEnvironme
   const { deployer } = await hre.getNamedAccounts();
   const { deploy } = hre.deployments;
 
-  // Agent address defaults to AGENT_ADDRESS env var or deployer
-  const agentAddress = process.env.AGENT_ADDRESS || process.env.NEXT_PUBLIC_AGENT_ADDRESS || deployer;
+  // Agent address defaults to AGENT_ADDRESS, AGENT_EVM_ADDRESS, or deployer
+  const agentAddress =
+    process.env.AGENT_ADDRESS || process.env.NEXT_PUBLIC_AGENT_ADDRESS || process.env.AGENT_EVM_ADDRESS || deployer;
 
   // 1 HBAR = 10^8 tinybar
   const TINYBAR_PER_HBAR = 100_000_000n;
