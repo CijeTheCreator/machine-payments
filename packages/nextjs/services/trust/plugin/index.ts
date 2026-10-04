@@ -1,7 +1,7 @@
 import { REGISTER_AGENT_TOOL, RegisterAgentTool } from "./tools/register-agent.tool";
 import { VALIDATE_AGENT_TOOL, ValidateAgentTool } from "./tools/validate-agent.tool";
 import { VERIFY_AGENT_SIGNATURE_TOOL, VerifyAgentSignatureTool } from "./tools/verify-signature.tool";
-import { Context, Plugin, Tool } from "@hashgraph/hedera-agent-kit";
+import { Plugin, Tool } from "@hashgraph/hedera-agent-kit";
 
 export {
   REGISTER_AGENT_TOOL,
