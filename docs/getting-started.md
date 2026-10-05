@@ -25,7 +25,11 @@ Set up your local development environment and deploy required testnet infrastruc
 npm create scaffold-hbar@latest -- --template CijeTheCreator/machine-payments
 cd machine-payments
 yarn install
+```
 
+![Initial Scaffold](/docs/assets/initial-scaffold.gif)
+
+```bash
 # 2. Fund your generated testnet account
 # Visit https://portal.hedera.com/faucet and paste the EVM address or Account ID printed during install
 
@@ -38,7 +42,7 @@ yarn next:dev
 
 Run one command to deploy your contracts and consensus topics:
 
-![Rapid Zero-Secrets Setup](/docs/assets/quickstart-setup.gif)
+![Prepare](/docs/assets/prepare.gif)
 
 Your contracts are deployed on Hedera testnet and local configuration is synchronized.
 
@@ -59,7 +63,7 @@ Running the scaffold gives you the complete agent-centric onboarding UI, claim f
 
 Create a claim code in the merchant portal and send the link to your agent:
 
-![Agent Onboarding](/docs/assets/agent-onboarding.gif)
+![Onboarding](/docs/assets/onboarding.gif)
 
 The agent registers its wallet and appears in your agent registry.
 
@@ -76,8 +80,6 @@ Autonomous agents read `<your-url>/skill.md` out of the box to discover availabl
 > [!NOTE]
 > In development, this is available at `http://localhost:3000/skill.md`.
 
-![Agent Skill Discovery](/docs/assets/agent-skill-flow.gif)
-
 When an agent connects, it claims its allowance via `POST /api/agents/claim` and signs subsequent x402 payment challenges autonomously.
 
 ---
@@ -89,12 +91,12 @@ When an agent connects, it claims its allowance via `POST /api/agents/claim` and
 Generate a ready-to-run Next.js App Router endpoint gated by x402 payment challenges, ERC-8004 agent trust, and spend guardrails with a single command.
 
 ```bash
-yarn script:make-route --name sentiment --price 0.5 --trust
+yarn script:make-route --name inference --price 0.5 --trust
 ```
 
 Generate an x402-gated API endpoint with one command:
 
-![Make Route CLI Scaffolder](/docs/assets/make-route-scaffolder.gif)
+![Make](/docs/assets/make.gif)
 
 The endpoint immediately rejects unpaid requests with an HTTP 402 challenge.
 
@@ -110,9 +112,15 @@ import { withSpendGuard } from "~~/services/guard";
 
 // 0.5 HBAR = 50,000,000 tinybars
 const PRICE_TINYBAR = "50000000";
-const PAY_TO = process.env.NEXT_PUBLIC_VAULT_ADDRESS || process.env.AGENT_ACCOUNT_ID || "0.0.X";
+const PAY_TO =
+  process.env.NEXT_PUBLIC_VAULT_ADDRESS ||
+  process.env.AGENT_ACCOUNT_ID ||
+  "0.0.X";
 
-const sentimentHandler = async (req: Request, { payment, guard, agent }: any) => {
+const sentimentHandler = async (
+  req: Request,
+  { payment, guard, agent }: any,
+) => {
   // Add your monetization logic here.
   // This code only runs after the client completes the payment challenge.
   return NextResponse.json({
@@ -124,8 +132,8 @@ const sentimentHandler = async (req: Request, { payment, guard, agent }: any) =>
 export const GET = withAgentTrust(
   withX402(
     withSpendGuard(sentimentHandler, { maxPriceHbar: 10, recordAudit: true }),
-    { priceTinybar: PRICE_TINYBAR, payTo: PAY_TO, memo: "x402-sentiment" }
-  )
+    { priceTinybar: PRICE_TINYBAR, payTo: PAY_TO, memo: "x402-sentiment" },
+  ),
 );
 ```
 
@@ -162,7 +170,7 @@ curl -i http://localhost:3000/api/sentiment \
 
 Make a request to a protected endpoint:
 
-![x402 Micropayment Flow](/docs/assets/x402-payment-flow.gif)
+![402Flow](/docs/assets/402flow.gif)
 
 The client signs the 402 challenge and receives the paid response instantly.
 
@@ -179,7 +187,7 @@ The dashboard is already set up out of the box for buyers (owners of the agents)
 
 Track agent spend and verify consensus settlement receipts in real-time:
 
-![Agent Spend Dashboard](/docs/assets/spend-dashboard.gif)
+![Dashboard](/docs/assets/dashboard.gif)
 
 Transactions exceeding spend limits escalate to human signers via HIP-423 scheduled transactions.
 
